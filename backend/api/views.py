@@ -2,7 +2,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect
-from django.db.transaction import atomic
+
+# from django.db.transaction import atomic
 from django.db.models import QuerySet
 from rest_framework import generics  # , filters #, mixins
 from rest_framework import permissions

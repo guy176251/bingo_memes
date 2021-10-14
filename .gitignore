@@ -1,5 +1,8 @@
-.env
+.env*
+
 *.pyc
+__pycache__/
+.mypy_cache/
 
 # api
 /api/migrations

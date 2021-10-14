@@ -1,0 +1,27 @@
+# pull official base image
+FROM python:3.9-alpine
+
+# set work directory
+WORKDIR /usr/app/backend
+
+# set environment variables
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+# install dependencies
+RUN apk update \
+    && apk add postgresql-dev gcc python3-dev musl-dev libc6-compat libffi-dev
+
+# https://dustri.org/b/error-loading-shared-library-ld-linux-x86-64so2-on-alpine-linux.html
+RUN ln -s /lib/libc.musl-x86_64.so.1 /lib/ld-linux-x86-64.so.2
+
+# copy poetry files
+COPY poetry.lock pyproject.toml .
+
+# install dependencies
+RUN pip install poetry
+RUN poetry install --no-dev
+
+# copy project
+COPY . .
+#RUN poetry run flake8 .
