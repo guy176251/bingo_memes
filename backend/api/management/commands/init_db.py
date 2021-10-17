@@ -28,9 +28,9 @@ icon_url = "https://yt3.ggpht.com/ytc/AKedOLQFVN7wLaJFbdPU56qOkNlbkrMneYpTmGpneR
 category_description = "This is one of several test categories that are based on Trash Taste. Trash Taste is a podcast about various topics, which sometimes includes anime."
 
 
-def db_check() -> Optional[SiteUser]:
+def su_check() -> Optional[SiteUser]:
     """
-    Run before any database init function. Returns site user.
+    Run before any database init function. Checks if a superuser exists.
     """
 
     if BingoCard.objects.all().count() > 0:
@@ -39,9 +39,9 @@ def db_check() -> Optional[SiteUser]:
         )
         return None
 
-    auth_me = User.objects.filter(username="long", is_superuser=True).first()
+    auth_me = User.objects.filter(is_superuser=True).first()
     if not auth_me:
-        print('No superuser with username "long", should prob created yourself lol.')
+        print("No superuser, should prob create one.")
         return None
 
     site_me = SiteUser.objects.create(
@@ -167,8 +167,8 @@ def init_db_new():
     Used with dummy data.
     """
 
-    site_me = db_check()
-    if not site_me:
+    superuser = su_check()
+    if not superuser:
         return
 
     dummy_data = create_dummy_data()
@@ -292,7 +292,7 @@ def init_db_new():
 
 
 def init_db():
-    site_me = db_check()
+    site_me = su_check()
 
     if not site_me:
         return

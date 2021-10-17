@@ -2,25 +2,25 @@ from django.urls import path  # , re_path
 from . import views
 
 urlpatterns = [
-    *[
-        # frontend url routes
-        path(url, views.index)
-        for url in [
-            "",
-            "cards/",
-            "cards/<int:card_id>/",
-            "cards/<int:card_id>/edit/",
-            "users/<int:user_id>/",
-            "login/",
-            "signup/",
-            "categories/",
-            "categories/<str:category_name>/",
-            "categories/<str:category_name>/create/",
-            "search/",
-            "profile/",
-            "create/card/",
-        ]
-    ],
+    # *[
+    #     # frontend url routes
+    #     path(url, views.index)
+    #     for url in [
+    #         "",
+    #         "cards/",
+    #         "cards/<int:card_id>/",
+    #         "cards/<int:card_id>/edit/",
+    #         "users/<int:user_id>/",
+    #         "login/",
+    #         "signup/",
+    #         "categories/",
+    #         "categories/<str:category_name>/",
+    #         "categories/<str:category_name>/create/",
+    #         "search/",
+    #         "profile/",
+    #         "create/card/",
+    #     ]
+    # ],
     ##########################
     path("api/bar/categories/", views.CategorySearchList.as_view()),
     path("api/bar/cards/", views.CardSearchList.as_view()),
