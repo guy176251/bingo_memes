@@ -23,8 +23,8 @@ RUN npm run build
 
 ### Stage 2: delivery ###
 
-#FROM nginx:1.15.7-alpine
-FROM nginx:1.21.3-alpine
+#FROM nginx:1.21.3-alpine
+FROM jwilder/nginx-proxy:alpine
 
 # Remove default nginx website
 RUN rm -rf /usr/share/nginx/html/*
@@ -33,4 +33,6 @@ RUN rm -rf /usr/share/nginx/html/*
 COPY --from=builder /app/build /usr/share/nginx/html
 
 # Copy nginx configuration file.
-COPY ./docker/frontend/nginx/nginx.conf /etc/nginx/conf.d/default.conf
+#COPY ./docker/frontend/nginx/nginx.conf /etc/nginx/conf.d/default.conf
+COPY ./docker/frontend/nginx/vhost.d/default /etc/nginx/vhost.d/default
+COPY ./docker/frontend/nginx/custom.conf /etc/nginx/conf.d/custom.conf

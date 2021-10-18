@@ -29,10 +29,21 @@ services:
       dockerfile: ./docker/frontend/Dockerfile
     volumes:
       - static_volume:/app/django_static
+      - certs:/etc/nginx/certs
+      - html:/usr/share/nginx/html
+      - vhost:/etc/nginx/vhost.d
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    environment:
+      - VIRTUAL_HOST=0.0.0.0
     ports:
       - "8080:80"
     depends_on: 
       - backend
 
 volumes:
-  static_volume: {}
+  postgres_data:
+  static_volume:
+  certs:
+  html:
+  vhost:
+  #acme:
