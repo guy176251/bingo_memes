@@ -2,6 +2,7 @@
 
 until cd /app; do
     echo "Waiting for server volume..."
+    sleep 2
 done
 
 until poetry run ./manage.py migrate; do
@@ -9,10 +10,16 @@ until poetry run ./manage.py migrate; do
     sleep 2
 done
 
-poetry run ./manage.py collectstatic --noinput
+poetry run ./manage.py init_db
+init_db_status=$?
 
-poetry run ./manage.py runserver 0.0.0.0:8000
-#poetry run gunicorn backend.wsgi --bind 0.0.0.0:8000 #--workers 4 --threads 4
+if test $init_db_status -eq 0; then
+    poetry run ./manage.py collectstatic --noinput
+    #poetry run ./manage.py runserver 0.0.0.0:8000
+    poetry run gunicorn backend.wsgi --bind 0.0.0.0:8000 --log-level debug
+else
+    echo "Can't run backend: Status code $init_db_status"
+fi
 
 #####################################################################################
 # Options to DEBUG Django server

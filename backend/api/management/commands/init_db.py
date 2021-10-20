@@ -1,11 +1,13 @@
+import sys
 import itertools
 from typing import List, Optional
 from dataclasses import dataclass
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandError
+from django.core.management import call_command
 from random import sample, randint, choice
 from django.contrib.auth.models import User
 from django.db.transaction import atomic
-from libreddit_sort import hot_score, best_score
+from libreddit_sort import best_score  # , hot_score
 from api.signals import create_hashtags, create_unix_timestamp
 from api.models import (
     BingoCard,
@@ -22,13 +24,24 @@ num_of_usrs = 10
 num_of_cards = 10
 num_of_categories = 5
 total_cards = num_of_cards * num_of_usrs
-# banner_url = 'https://styles.redditmedia.com/t5_2p976a/styles/bannerBackgroundImage_06kn9itvtu451.png?width=4000&s=11c921cbb8dfbf979b45ef928693881fe3af1741'
-banner_url = "https://yt3.ggpht.com/Cxw4AarF_wX_PqgBJ-BsK6C_toAsxVAyGnsHJFssO9D7B3H2LS4xq1a7p0VSV-GstyLxPEOR5g=w1707-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj"
-icon_url = "https://yt3.ggpht.com/ytc/AKedOLQFVN7wLaJFbdPU56qOkNlbkrMneYpTmGpneRig=s88-c-k-c0x00ffffff-no-rj-mo"
-category_description = "This is one of several test categories that are based on Trash Taste. Trash Taste is a podcast about various topics, which sometimes includes anime."
+
+banner_url = (
+    "https://yt3.ggpht.com/"
+    "Cxw4AarF_wX_PqgBJ-BsK6C_toAsxVAyGnsHJFssO9D7B3H2LS4xq1a7p0VSV-GstyLxPEOR5g=w1707-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj"
+)
+
+icon_url = (
+    "https://yt3.ggpht.com/ytc/"
+    "AKedOLQFVN7wLaJFbdPU56qOkNlbkrMneYpTmGpneRig=s88-c-k-c0x00ffffff-no-rj-mo"
+)
+
+category_description = (
+    "This is one of several test categories that are based on Trash Taste."
+    "Trash Taste is a podcast about various topics, which sometimes includes anime."
+)
 
 
-def su_check() -> Optional[SiteUser]:
+def su_check() -> SiteUser:
     """
     Run before any database init function. Checks if a superuser exists.
     """
@@ -37,12 +50,20 @@ def su_check() -> Optional[SiteUser]:
         print(
             "Bingo cards already exist. Can only run this script to initialize an empty database."
         )
-        return None
+        sys.exit(0)
 
     auth_me = User.objects.filter(is_superuser=True).first()
     if not auth_me:
-        print("No superuser, should prob create one.")
-        return None
+        try:
+            call_command("createsuperuser", "--noinput")
+        except CommandError:
+            print(
+                "Creating superuser failed, missing one of the following environment variables: "
+                "DJANGO_SUPERUSER_USERNAME, DJANGO_SUPERUSER_EMAIL, DJANGO_SUPERUSER_PASSWORD"
+            )
+            sys.exit(1)
+        else:
+            auth_me = User.objects.filter(is_superuser=True).first()
 
     site_me = SiteUser.objects.create(
         name=auth_me.username, auth_user=auth_me, score=num_of_cards
@@ -101,7 +122,7 @@ def create_dummy_data() -> DummyData:
     }
     user_names = {t: {f"{t}_USER_{i}" for i in range(1, 6)} for t in category_types}
     # all_cat_names = set(itertools.chain.from_iterable(category_names.values()))
-    all_usr_names = set(itertools.chain.from_iterable(user_names.values()))
+    all_user_names = set(itertools.chain.from_iterable(user_names.values()))
 
     user_objs = list(
         itertools.chain.from_iterable(
@@ -145,7 +166,7 @@ def create_dummy_data() -> DummyData:
                     author_name=choice(tuple(user_names[t])),
                     sub_names=[
                         *sample(tuple(user_names[t]), randint(2, 4)),
-                        choice(tuple(all_usr_names - user_names[t])),
+                        choice(tuple(all_user_names - user_names[t])),
                     ],
                 )
                 for n in names

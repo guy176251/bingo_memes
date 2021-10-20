@@ -6,7 +6,7 @@ services:
     build:
       context: .
       dockerfile: ./docker/backend/Dockerfile
-    entrypoint: /docker/backend/entrypoint.dev.sh
+    entrypoint: /docker/backend/entrypoint.staging.sh
     volumes:
       - static_volume:/app/django_static
     expose:
@@ -14,12 +14,12 @@ services:
     env_file:
       - ./.env.dev
 
-  db:
-    image: postgres:13.0-alpine
-    volumes:
-      - postgres_data:/var/lib/postgresql/data/
-    env_file:
-      - ./.env.dev
+  #db:
+  #  image: postgres:13.0-alpine
+  #  volumes:
+  #    - postgres_data:/var/lib/postgresql/data/
+  #  env_file:
+  #    - ./.env.dev
 
   frontend:
     build:
@@ -28,9 +28,9 @@ services:
     volumes:
       - static_volume:/usr/share/nginx/html/django_static
       #- /var/run/docker.sock:/tmp/docker.sock:ro
-      #- vhost:/etc/nginx/vhost.d
       #- certs:/etc/nginx/certs
       #- html:/usr/share/nginx/html
+      #- vhost:/etc/nginx/vhost.d
     env_file:
       - ./.env.dev
     ports:
