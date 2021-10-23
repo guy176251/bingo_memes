@@ -28,7 +28,9 @@ ENV APP_MODULE backend.wsgi
 # install dependencies
 COPY ./backend/poetry.lock ./backend/pyproject.toml .
 RUN pip install poetry
-RUN poetry install --no-dev
+#RUN poetry install --no-dev
+RUN poetry export -f requirements.txt --output requirements.txt
+RUN pip install --no-cache-dir --upgrade -r /app/requirements.txt
 
 # copy backend
 COPY ./backend ./
