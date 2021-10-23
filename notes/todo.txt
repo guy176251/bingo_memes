@@ -1,0 +1,8 @@
+- moving to cloud run, have to make everything stateless
+- automating admin creation
+- automating dev database creation
+- tweak init_db
+- changed entrypoint.sh files
+- have to test changes on empty db; seems to work
+
+- might be easier to package site in single image
