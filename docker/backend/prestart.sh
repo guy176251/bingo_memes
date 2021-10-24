@@ -24,6 +24,8 @@ main() {
     done
 
     ./manage.py init_db && init_success || init_failure
+
+    #nginx
 }
 
 main

@@ -18,7 +18,7 @@ RUN npm run build
 
 ### Stage 2: Backend ###
 
-FROM tiangolo/meinheld-gunicorn:python3.9-2021-10-02
+FROM tiangolo/uwsgi-nginx:python3.9-2021-10-02
 WORKDIR /app
 
 ENV PYTHONDONTWRITEBYTECODE 1
@@ -34,7 +34,7 @@ RUN pip install --no-cache-dir --upgrade -r /app/requirements.txt
 
 # copy backend
 COPY ./backend ./
-COPY ./docker /docker
+#COPY ./docker /docker
 #RUN poetry run flake8 .
 
 # copy frontend static files 
@@ -42,7 +42,10 @@ RUN rm -rf /usr/share/nginx/html/*
 COPY --from=builder /app/build /usr/share/nginx/html
 
 # Copy nginx configuration
-COPY ./docker/frontend/nginx/nginx.conf /etc/nginx/conf.d/default.conf
+COPY ./docker/frontend/nginx/nginx.conf /etc/nginx/conf.d/custom.conf
 
 # Copy prestart script
-COPY ./docker/backend/prestart.sh /app/prestart.sh
+COPY ./docker/backend/prestart.sh /app
+
+# Copy uwsgi.ini
+COPY ./docker/backend/uwsgi.ini /app
