@@ -34,18 +34,17 @@ RUN pip install --no-cache-dir --upgrade -r /app/requirements.txt
 
 # copy backend
 COPY ./backend ./
-#COPY ./docker /docker
-#RUN poetry run flake8 .
 
 # copy frontend static files 
 RUN rm -rf /usr/share/nginx/html/*
 COPY --from=builder /app/build /usr/share/nginx/html
 
 # Copy nginx configuration
-COPY ./docker/frontend/nginx/nginx.conf /etc/nginx/conf.d/custom.conf
+#COPY ./docker/frontend/nginx/nginx.conf /etc/nginx/conf.d/custom.conf
 
 # Copy prestart script
-COPY ./docker/backend/prestart.sh /app
+COPY ./docker/prestart.sh /app
+COPY ./docker/print-nginx-conf.sh /app
 
 # Copy uwsgi.ini
-COPY ./docker/backend/uwsgi.ini /app
+COPY ./docker/uwsgi.ini /app

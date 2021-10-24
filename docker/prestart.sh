@@ -1,15 +1,21 @@
 #!/usr/bin/env bash
+# Executed in /app
 
 set -x
 
-init_success() {
+init_db_success() {
     ./manage.py collectstatic --noinput
     cp -r /app/django_static /usr/share/nginx/html
 }
 
-init_failure() {
+init_db_failure() {
     local err=$?
     echo " -> backend ded, here problem: Status code: $err"
+}
+
+init_dev_db() {
+    echo 'Creating test database...'
+    ./manage.py init_db && init_db_success || init_db_failure
 }
 
 main() {
@@ -23,9 +29,10 @@ main() {
         sleep 2
     done
 
-    ./manage.py init_db && init_success || init_failure
+    DEBUG=${DEBUG:-0}
+    ! test $DEBUG -eq 0 && init_dev_db
 
-    #nginx
+    ./print-nginx-conf.sh >/etc/nginx/conf.d/custom.conf
 }
 
 main
