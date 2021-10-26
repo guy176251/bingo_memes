@@ -1,4 +1,4 @@
-domains="${DOMAINS:-_}"
+domains="${SERVER_NAME:-_}"
 config_file="
 
 server {

@@ -29,8 +29,9 @@ main() {
         sleep 2
     done
 
-    DEBUG=${DEBUG:-0}
-    ! test $DEBUG -eq 0 && init_dev_db
+    #test -z "$DEBUG" && DEBUG=1
+    DEBUG=${DEBUG:-1}
+    test $DEBUG -eq 1 && init_dev_db
 
     ./print-nginx-conf.sh >/etc/nginx/conf.d/custom.conf
 }
