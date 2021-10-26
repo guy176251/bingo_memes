@@ -19,6 +19,7 @@ RUN npm run build
 ### Stage 2: Backend ###
 
 FROM tiangolo/uwsgi-nginx:python3.9-2021-10-02
+
 WORKDIR /app
 
 ENV PYTHONDONTWRITEBYTECODE 1
@@ -38,6 +39,6 @@ RUN rm -rf /usr/share/nginx/html/*
 COPY --from=builder /app/build /usr/share/nginx/html
 
 # Copy docker image related files
-COPY ./docker/prestart.sh /app
-COPY ./docker/print-nginx-conf.sh /app
-COPY ./docker/uwsgi.ini /app
+COPY ./docker/prestart.sh ./
+COPY ./docker/print-nginx-conf.sh ./
+COPY ./docker/uwsgi.ini ./
