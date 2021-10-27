@@ -1,5 +1,12 @@
 from django.dispatch import receiver
-from django.db.models.signals import post_save, pre_save, post_init, pre_init, pre_delete, post_delete
+from django.db.models.signals import (
+    post_save,
+    pre_save,
+    post_init,
+    pre_init,
+    pre_delete,
+    post_delete,
+)
 from .models import Vote, BingoCard, SiteUser, Hashtag
 from libreddit_sort import hot_score, best_score
 from django.db.transaction import atomic
@@ -23,13 +30,12 @@ def create_unix_timestamp(card: BingoCard):
 
 def create_hashtags(card: BingoCard):
     # parse bingo card name for first 4 hashtags and create them, then add them to card and category
-    hashtags_text = re.findall(r'#(\w+)', card.name)[:4]
+    hashtags_text = re.findall(r"#(\w+)", card.name)[:4]
 
-    Hashtag.objects.bulk_create([
-        Hashtag(name=h.lower())
-        for h in hashtags_text
-        if len(h) <= 20
-    ], ignore_conflicts=True)
+    Hashtag.objects.bulk_create(
+        [Hashtag(name=h.lower()) for h in hashtags_text if len(h) <= 20],
+        ignore_conflicts=True,
+    )
 
     hashtags = Hashtag.objects.filter(name__in=hashtags_text)
 
@@ -63,7 +69,7 @@ def adjust_card_scores(card: BingoCard):
         card.save()
 
         author = card.author
-        author.score = sum(author.cards_created.values_list('score', flat=True))
+        author.score = sum(author.cards_created.values_list("score", flat=True))
         author.save()
 
-    #print(card)
+    # print(card)
