@@ -5,11 +5,11 @@ __pycache__/
 .mypy_cache/
 
 # api
-/api/migrations
+/backend/api/migrations
 
 # frontend
 /frontend/node_modules
-/frontend/old
+/frontend/.old
 /frontend/build
 
 # sort_algo
