@@ -26,7 +26,7 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
 # install dependencies
-COPY ./backend/poetry.lock ./backend/pyproject.toml .
+COPY ./backend/poetry.lock ./backend/pyproject.toml ./
 RUN pip install poetry
 RUN poetry export -f requirements.txt --output requirements.txt
 RUN pip install --no-cache-dir --upgrade -r /app/requirements.txt
