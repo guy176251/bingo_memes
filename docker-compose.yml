@@ -15,10 +15,10 @@ services:
 
   db:
     image: postgres:alpine
-    volumes:
-      - bingo_memes_data:/var/lib/postgresql/data/
+      #volumes:
+      #  - db_data:/var/lib/postgresql/data/
     env_file:
       - ./.env.dev
 
 volumes:
-  bingo_memes_data:
+  db_data:

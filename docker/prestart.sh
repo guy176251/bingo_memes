@@ -3,39 +3,22 @@
 
 set -x
 
-init_db_success() {
-    ./manage.py makemigrations
-}
+until cd /app; do
+    echo "Waiting for server volume..."
+    sleep 2
+done
 
-init_db_failure() {
-    local err=$?
-    echo " -> backend ded, here problem: Status code: $err"
-}
+until ./manage.py makemigrations; do
+    echo "Waiting for db to be ready..."
+    sleep 2
+done
 
-init_dev_db() {
-    echo 'Creating test database...'
-    ./manage.py init_db && init_db_success || init_db_failure
-}
+./manage.py migrate
 
-main() {
-    until cd /app; do
-        echo "Waiting for server volume..."
-        sleep 2
-    done
+#test -z "$DEBUG" && DEBUG=1
+DEBUG=${DEBUG:-1}
+test $DEBUG -eq 1 && ./manage.py init_db
 
-    #test -z "$DEBUG" && DEBUG=1
-    DEBUG=${DEBUG:-1}
-    test $DEBUG -eq 1 && init_dev_db
-
-    until ./manage.py migrate; do
-        echo "Waiting for db to be ready..."
-        sleep 2
-    done
-
-    ./manage.py collectstatic --noinput
-    cp -r /app/django_static /usr/share/nginx/html
-
-    ./print-nginx-conf.sh >/etc/nginx/conf.d/custom.conf
-}
-
-main
+./manage.py collectstatic --noinput
+cp -r /app/django_static /usr/share/nginx/html
+./print-nginx-conf.sh >/etc/nginx/conf.d/custom.conf
