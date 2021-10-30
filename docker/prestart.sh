@@ -13,6 +13,7 @@ until ./manage.py makemigrations; do
     sleep 2
 done
 
+./manage.py makemigrations api
 ./manage.py migrate
 
 #test -z "$DEBUG" && DEBUG=1
