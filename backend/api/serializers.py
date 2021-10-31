@@ -202,7 +202,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
 class TileSerializer(serializers.ModelSerializer):
     # id fields needs explicit field definition if they are to be used in creation/update
-    id = serializers.IntegerField()
+    id = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = BingoTile
@@ -251,7 +251,7 @@ class CardDetailSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             f: is_immutable
             for f in ["score", "created_at"]
-            #'name': {'validators': [validators.length_is_(50)]},
+            # 'name': {'validators': [validators.length_is_(50)]},
         }
 
     def get_upvoted(self, card):
@@ -322,7 +322,7 @@ class CardListSerializer(CardDetailSerializer):
 
 
 class CardVoteSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField(validators=[validators.card_exists])
+    id = serializers.IntegerField(validators=[validators.card_exists], read_only=True)
 
     class Meta:
         model = BingoCard
@@ -398,7 +398,7 @@ class CardSearchBarSerializer(serializers.ModelSerializer):
 
 
 class UserFollowSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField(validators=[validators.user_exists])
+    id = serializers.IntegerField(validators=[validators.user_exists], read_only=True)
 
     class Meta:
         model = SiteUser
@@ -417,7 +417,9 @@ class UserFollowSerializer(serializers.ModelSerializer):
 
 
 class CategorySubscribeSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField(validators=[validators.category_id_exists])
+    id = serializers.IntegerField(
+        validators=[validators.category_id_exists], read_only=True
+    )
 
     class Meta:
         model = BingoCardCategory
