@@ -57,7 +57,9 @@
     "@types/react-helmet": "^6.1.2",
     "@types/react-router-dom": "^5.1.8",
     "@types/yup": "^0.29.13",
-    "react-scripts": "^4.0.3"
+    "eslint_d": "^11.0.0",
+    "react-scripts": "^4.0.3",
+    "webpack-cli": "^4.9.1"
   },
   "prettier": {
     "printWidth": 120,

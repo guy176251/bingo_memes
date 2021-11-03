@@ -27,7 +27,7 @@ import SearchBar from "./components/searchbar";
 import "./scss/main.scss";
 import "./scss/sidebar.scss";
 import { BingoCard } from "./types";
-import CardCreateViewkjahsdk from "./views/cardcreateview";
+import CardCreateView from "./views/cardcreateview";
 import CardView from "./views/cardview";
 import CategoryView from "./views/categoryview";
 import HomePageView from "./views/homepageview";
@@ -220,8 +220,8 @@ const TopNavBar = () => {
 
 const App = () => {
     const containerRoutes: { [s: string]: React.FC } = {
-        "/categories/:categoryName/create/": CardCreateViewkjahsdk,
-        "/cards/:cardId/edit/": CardCreateViewkjahsdk,
+        "/categories/:categoryName/create/": CardCreateView,
+        "/cards/:cardId/edit/": CardCreateView,
         "/signup/": SignupView,
         "/login/": LoginView,
         "/cards/:cardId/": CardView,

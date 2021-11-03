@@ -1,7 +1,7 @@
 //import { abort } from "process";
 
 const DEBUG = true;
-const debugLog = (props: any) => {
+const debugLog = (debugObject: any) => {
     if (DEBUG) {
         /*
     const logBody = Object.entries(props)
@@ -10,7 +10,11 @@ const debugLog = (props: any) => {
 
     console.log(`{\n  ${logBody}\n}`);
     */
-        console.log(JSON.stringify(props, null, 4));
+        try {
+            console.log(JSON.stringify(debugObject, null, 4));
+        } catch (err) {
+            console.log(err);
+        }
     }
     //DEBUG && console.log(props);
 };
