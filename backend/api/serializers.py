@@ -29,6 +29,8 @@ is_immutable = {"required": False, "read_only": True}
 
 
 class UserSessionSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(read_only=True)
+
     class Meta:
         model = SiteUser
         fields = ["id", "name", "score"]
@@ -435,94 +437,3 @@ class CategorySubscribeSerializer(serializers.ModelSerializer):
             category.subscribers.add(user)
 
         return category
-
-
-# class CategoryIdSerializer(serializers.ModelSerializer):
-#    id = serializers.IntegerField(validators=[validators.category_exists])
-#
-#    class Meta:
-#        model = BingoCardCategory
-#        fields = ['id']
-#
-#
-# class SubToCategorySerializer(serializers.ModelSerializer):
-#    category = CategoryIdSerializer()
-#
-#    class Meta:
-#        model = Subscription
-#        fields = ['category']
-#
-#    def create(self, sub_data: dict):
-#        SubModel = self.Meta.model
-#
-#        category_id = sub_data['category']['id']
-#        category = BingoCardCategory.objects.get(id=category_id)
-#        sub_data['category'] = category
-#
-#        try:
-#            subscription = SubModel.objects.create(**sub_data)
-#        except IntegrityError:
-#            subscription = SubModel.objects.filter(**sub_data).first()
-#            subscription.delete()
-#
-#        return subscription
-#
-#
-# class UserIdSerializer(serializers.ModelSerializer):
-#    id = serializers.IntegerField(validators=[validators.user_exists])
-#
-#    class Meta:
-#        model = SiteUser
-#        fields = ['id']
-#
-#
-# class FollowUserSerializer(serializers.ModelSerializer):
-#    followee = UserIdSerializer()
-#
-#    class Meta:
-#        model = Follow
-#        fields = ['followee']
-#
-#    def create(self, sub_data: dict):
-#        SubModel = self.Meta.model
-#
-#        followee_id = sub_data['followee']['id']
-#        followee = SiteUser.objects.get(id=followee_id)
-#        sub_data['followee'] = followee
-#
-#        try:
-#            subscription = SubModel.objects.create(**sub_data)
-#            print('creating')
-#        except IntegrityError:
-#            subscription = SubModel.objects.filter(**sub_data).first()
-#            subscription.delete()
-#            print('deleting')
-#
-#        print(subscription)
-#        return subscription
-
-
-# def card_meta(*, detail=False, lst=False):
-#
-#    immutable_fields = {
-#        f: is_immutable
-#        for f in ['score', 'created_at', 'hashtags']
-#    }
-#
-#    #detail = ['tiles'] if detail else []
-#    lst = False
-#    lst = ['top_3'] if lst else []
-#
-#    class Meta:
-#        model = BingoCard
-#        fields = ['id', 'score', 'name', 'author', 'created_at', 'hashtags',
-#                  'upvoted', 'category', 'tiles', *lst]
-#
-#        extra_kwargs = {
-#            #'name': {'validators': [validators.length_is_(50)]},
-#            **immutable_fields,
-#        }
-#
-#    return Meta
-#
-#

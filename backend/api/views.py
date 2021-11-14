@@ -14,21 +14,21 @@ from rest_framework.request import Request
 
 from .models import BingoCard, BingoCardCategory, SiteUser
 from .serializers import (
-    CardDetailSerializer,
-    VoteSerializer,
-    UserCreateSerializer,
-    UserSessionSerializer,
-    UserDetailSerializer,
-    LoginSerializer,
-    CardListSerializer,
-    CategorySerializer,
-    CategorySearchBarSerializer,
-    CardSearchBarSerializer,
-    # SubToCategorySerializer,
     # FollowUserSerializer,
-    UserFollowSerializer,
-    CategorySubscribeSerializer,
+    # SubToCategorySerializer,
+    CardDetailSerializer,
+    CardListSerializer,
+    CardSearchBarSerializer,
     CategoryRelatedSerializer,
+    CategorySearchBarSerializer,
+    CategorySerializer,
+    CategorySubscribeSerializer,
+    LoginSerializer,
+    UserCreateSerializer,
+    UserDetailSerializer,
+    UserFollowSerializer,
+    UserSessionSerializer,
+    VoteSerializer,
 )
 
 from .filters import (

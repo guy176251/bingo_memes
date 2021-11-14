@@ -26,13 +26,17 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
 # install dependencies
-COPY ./backend/poetry.lock ./backend/pyproject.toml ./
 RUN pip install poetry
+COPY ./backend/poetry.lock ./backend/pyproject.toml ./
 RUN poetry export -f requirements.txt --output requirements.txt
 RUN pip install --no-cache-dir --upgrade -r /app/requirements.txt
 
 # copy backend
 COPY ./backend ./
+
+# tests
+RUN mypy .
+RUN flake8 .
 
 # copy frontend static files 
 RUN rm -rf /usr/share/nginx/html/*

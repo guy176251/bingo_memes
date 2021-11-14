@@ -29,6 +29,8 @@ DEBUG = int(os.environ["DEBUG"])
 # 'DJANGO_ALLOWED_HOSTS' should be a single string of hosts with a space between each.
 # For example: 'DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]'
 ALLOWED_HOSTS = re.split(r"\s+", os.environ["ALLOWED_HOSTS"])
+CSRF_TRUSTED_ORIGINS = ALLOWED_HOSTS
+CORS_ALLOWED_ORIGINS = [f"http://{h}" for h in ALLOWED_HOSTS]
 
 DATABASES = {
     "default": {
@@ -44,6 +46,7 @@ DATABASES = {
 # Application definition
 
 INSTALLED_APPS = [
+    "corsheaders",
     "rest_framework",
     "api.apps.ApiConfig",
     "django.contrib.admin",
@@ -55,7 +58,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    # 'django.middleware.gzip.GZipMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
