@@ -26,14 +26,11 @@ num_of_categories = 5
 total_cards = num_of_cards * num_of_usrs
 
 banner_url = (
-    "https://yt3.ggpht.com/"
-    "Cxw4AarF_wX_PqgBJ-BsK6C_toAsxVAyGnsHJFssO9D7B3H2LS4xq1a7p0VSV-GstyLxPEOR5g=w1707-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj"
+    "https://previews.123rf.com/images/roxanabalint/roxanabalint1610/roxanabalint161000101/"
+    "63650664-bingo-banner-or-label-for-business-promotion-on-white-background-vector-illustration.jpg"
 )
 
-icon_url = (
-    "https://yt3.ggpht.com/ytc/"
-    "AKedOLQFVN7wLaJFbdPU56qOkNlbkrMneYpTmGpneRig=s88-c-k-c0x00ffffff-no-rj-mo"
-)
+icon_url = "https://cdn.iconscout.com/icon/premium/png-256-thumb/bingo-ball-3768448-3142190.png"
 
 category_description = (
     "This is one of several test categories that are based on Trash Taste."
@@ -110,8 +107,7 @@ def create_dummy_data() -> DummyData:
     """
 
     category_types = {
-        "MEMES",
-        "WEEB",
+        "POP_CULTURE",
         "POLITICS",
         "ART",
         "SPORTS",
@@ -404,61 +400,63 @@ def init_db():
 
 
 all_tag_texts = [
-    "monke",
-    "grant",
-    "karen",
-    "food",
-    "anime",
-    "japan",
+    "trending",
+    "follow",
+    "viral",
+    "music",
+    "explore",
+    "fashion",
+    "famous",
 ]
+all_tile_texts = [f"tile #{i}" for i in range(1, 51)]
 
-all_tile_texts = [
-    "Free Space",
-    "They talk to Meilyne behind the camera",
-    '"When I worked at the BBC..."',
-    "They mention JOJO",
-    "CUM! CUM! CUM!",
-    "Garnt laughs to himself",
-    "Connor leans back while talking so you cannot hear him",
-    "Joey flexes his Japanese",
-    '"it hits different"',
-    'Someone says "giga-brain"',
-    "Mentioning 93%, Gig UK, Hentaiman or any nickname",
-    "TOURNAMENT AAAAAAARC!!!",
-    "They mention hentai",
-    "Everyone wears shirts from same franchise",
-    "They talks about food",
-    '"Back in uni/college..."',
-    'Someone says "monkey brain"',
-    "Garnt wears shorts",
-    "Someone tries to say something but gets interrupted",
-    "They talk about living in Japan",
-    "Someone mentions School Days",
-    "Someone mentions the Fate franchise",
-    "They mention a fan-made meme or the subreddit",
-    'Garnt says "so for me it was like..."',
-    "Connor story time",
-    "When you actually laughed and feel wholesome",
-    "NUT!",
-    "GUEST EPISODE",
-    'Garnt says "I feel like..."',
-    '"I\'m just gonna say it..."',
-    "CHOTTO MATE",
-    "ISEKAI",
-    '"So here\'s the thing..."',
-    "They show the original source material",
-    '"but with attitude"',
-    '"...you know what I mean?"',
-    "WEEB",
-    "ANIME TIDDIES",
-    '"It\'s like that meme..."',
-    '"...that was a big tangent, what were we talking about again?"',
-    'Garnt says "so here\'s a question for you..."',
-    '"pretty mid"',
-    "They actually talk about anime",
-    "SIMP",
-    "Connor purposefully starts an argument",
-]
+# all_tile_texts = [
+#     "Free Space",
+#     "They talk to Meilyne behind the camera",
+#     '"When I worked at the BBC..."',
+#     "They mention JOJO",
+#     "CUM! CUM! CUM!",
+#     "Garnt laughs to himself",
+#     "Connor leans back while talking so you cannot hear him",
+#     "Joey flexes his Japanese",
+#     '"it hits different"',
+#     'Someone says "giga-brain"',
+#     "Mentioning 93%, Gig UK, Hentaiman or any nickname",
+#     "TOURNAMENT AAAAAAARC!!!",
+#     "They mention hentai",
+#     "Everyone wears shirts from same franchise",
+#     "They talks about food",
+#     '"Back in uni/college..."',
+#     'Someone says "monkey brain"',
+#     "Garnt wears shorts",
+#     "Someone tries to say something but gets interrupted",
+#     "They talk about living in Japan",
+#     "Someone mentions School Days",
+#     "Someone mentions the Fate franchise",
+#     "They mention a fan-made meme or the subreddit",
+#     'Garnt says "so for me it was like..."',
+#     "Connor story time",
+#     "When you actually laughed and feel wholesome",
+#     "NUT!",
+#     "GUEST EPISODE",
+#     'Garnt says "I feel like..."',
+#     '"I\'m just gonna say it..."',
+#     "CHOTTO MATE",
+#     "ISEKAI",
+#     '"So here\'s the thing..."',
+#     "They show the original source material",
+#     '"but with attitude"',
+#     '"...you know what I mean?"',
+#     "WEEB",
+#     "ANIME TIDDIES",
+#     '"It\'s like that meme..."',
+#     '"...that was a big tangent, what were we talking about again?"',
+#     'Garnt says "so here\'s a question for you..."',
+#     '"pretty mid"',
+#     "They actually talk about anime",
+#     "SIMP",
+#     "Connor purposefully starts an argument",
+# ]
 
 # print(len(max(all_tile_texts, key=lambda t: len(t))))
 
