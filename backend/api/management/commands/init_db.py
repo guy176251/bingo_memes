@@ -33,8 +33,7 @@ banner_url = (
 icon_url = "https://cdn.iconscout.com/icon/premium/png-256-thumb/bingo-ball-3768448-3142190.png"
 
 category_description = (
-    "This is one of several test categories that are based on Trash Taste."
-    "Trash Taste is a podcast about various topics, which sometimes includes anime."
+    "This is one of several test categories that are used in the debug site. "
 )
 
 

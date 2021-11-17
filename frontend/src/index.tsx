@@ -230,6 +230,7 @@ const App = () => {
     return (
         <div className="sdark-bg">
             <TopNavBar />
+            {process.env.REACT_APP_DEBUG && <h1>Debug</h1>}
             <Switch>
                 {/* CARD LIST ROUTES; DOESN'T NEED CONTAINER */}
                 <Route exact path="/categories/:categoryName/">

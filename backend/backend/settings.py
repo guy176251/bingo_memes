@@ -19,29 +19,7 @@ from pathlib import Path
 # from decouple import config, Csv
 
 APP_NAME = "backend"
-
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-SECRET_KEY = os.environ["SECRET_KEY"]
-DEBUG = int(os.environ["DEBUG"])
-
-# 'DJANGO_ALLOWED_HOSTS' should be a single string of hosts with a space between each.
-# For example: 'DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]'
-ALLOWED_HOSTS = re.split(r"\s+", os.environ["ALLOWED_HOSTS"])
-CSRF_TRUSTED_ORIGINS = ALLOWED_HOSTS
-CORS_ALLOWED_ORIGINS = [f"http://{h}" for h in ALLOWED_HOSTS]
-
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ["DB_NAME"],
-        "USER": os.environ["DB_USER"],
-        "PASSWORD": os.environ["DB_PASSWORD"],
-        "HOST": os.environ["DB_HOST"],
-        "PORT": os.environ["DB_PORT"],
-    }
-}
 
 # Application definition
 
@@ -165,11 +143,28 @@ SESSION_COOKIE_HTTPONLY = True
 # CSRF_COOKIE_SECURE = True
 # SESSION_COOKIE_SECURE = True
 
-DEFAULT_RENDERER_CLASSES: tuple[str, ...] = ("rest_framework.renderers.JSONRenderer",)
+SECRET_KEY = os.environ["SECRET_KEY"]
+DEBUG = int(os.environ["DEBUG"])
+
+# 'DJANGO_ALLOWED_HOSTS' should be a single string of hosts with a space between each.
+ALLOWED_HOSTS = re.split(r"\s+", os.environ["ALLOWED_HOSTS"])
+CSRF_TRUSTED_ORIGINS = ALLOWED_HOSTS
+CORS_ALLOWED_ORIGINS = [f"http://{h}" for h in ALLOWED_HOSTS]
+
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.environ["DB_NAME"],
+        "USER": os.environ["DB_USER"],
+        "PASSWORD": os.environ["DB_PASSWORD"],
+        "HOST": os.environ["DB_HOST"],
+        "PORT": os.environ["DB_PORT"],
+    }
+}
+
+DEFAULT_RENDERER_CLASSES: list[str] = ["rest_framework.renderers.JSONRenderer"]
 
 if DEBUG:
-    DEFAULT_RENDERER_CLASSES = DEFAULT_RENDERER_CLASSES + (
-        "rest_framework.renderers.BrowsableAPIRenderer",
-    )
+    DEFAULT_RENDERER_CLASSES.append("rest_framework.renderers.BrowsableAPIRenderer")
 
 REST_FRAMEWORK = {"DEFAULT_RENDERER_CLASSES": DEFAULT_RENDERER_CLASSES}
