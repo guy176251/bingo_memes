@@ -23,6 +23,7 @@ interface AuthData {
     ifAuth: (callback: () => void) => void;
 }
 
+// default empty init values
 export const AuthContext = createContext<AuthData>({
     user: null,
     async login(props: LoginProps) {},
