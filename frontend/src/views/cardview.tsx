@@ -339,11 +339,7 @@ const CardLayout = ({ passedCard, cardInfo }: CardLayoutProps) => {
                                                     </div>
                                                 </Col>
                                                 <Col>
-                                                    <div className="h-100">
-                                                        {index === 1
-                                                            ? "one"
-                                                            : "Adipisicing exercitationem cum impedit natus consectetur."}
-                                                    </div>
+                                                    <div className="h-100">{tile.text}</div>
                                                 </Col>
                                             </Row>
                                         </div>
