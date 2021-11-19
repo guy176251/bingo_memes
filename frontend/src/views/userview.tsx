@@ -32,11 +32,9 @@ const UserHeader = ({ data }: { data: User }) => (
         <CardListSidebar
             query={{ user: data.id }}
             infoCol={
-                <Col xs={12}>
-                    <div className="text-center">
-                        <h4 className="my-2">cards created by {data.name}</h4>
-                    </div>
-                </Col>
+                <div className="text-center">
+                    <h4 className="my-2">cards created by {data.name}</h4>
+                </div>
             }
             sidebarCol={
                 <Col xs={12}>

@@ -102,13 +102,12 @@ export const CardListSidebar = ({ header, query, home, infoCol, sidebarCol }: Ca
     return (
         <>
             {header}
-
             <div className="py-3">
                 <Container>
                     <Row className="g-3">
                         <Col xs={12} lg={8}>
                             <Row className="g-3">
-                                {infoCol}
+                                {infoCol && <Col xs={12}>{infoCol}</Col>}
                                 <Col xs={12}>
                                     <CardList query={query} home={home} key={`${Date.now()}`} />
                                 </Col>
