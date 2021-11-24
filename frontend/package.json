@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.36",
+    "@fortawesome/free-solid-svg-icons": "^5.15.4",
+    "@fortawesome/react-fontawesome": "^0.1.15",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^12.1.0",
     "@testing-library/user-event": "^13.2.1",
@@ -13,9 +16,6 @@
     "@types/react-helmet": "^6.1.2",
     "@types/react-router-dom": "^5.1.8",
     "@types/yup": "^0.29.13",
-    "@fortawesome/fontawesome-svg-core": "^1.2.36",
-    "@fortawesome/free-solid-svg-icons": "^5.15.4",
-    "@fortawesome/react-fontawesome": "^0.1.15",
     "bootstrap": "^5.1.0",
     "formik": "^2.2.6",
     "node-sass": "^6.0.1",
@@ -58,6 +58,7 @@
   },
   "devDependencies": {
     "eslint_d": "^11.0.0",
+    "find-unused-exports": "^2.0.0",
     "react-scripts": "^4.0.3",
     "webpack-cli": "^4.9.1"
   },
