@@ -33,7 +33,13 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "corsheaders",
     "rest_framework",
-    "api.apps.ApiConfig",
+    # "api.apps.ApiConfig",
+    "user.apps.UserConfig",
+    "category.apps.CategoryConfig",
+    "card.apps.CardConfig",
+    "follow.apps.FollowConfig",
+    "subscribe.apps.SubscribeConfig",
+    "vote.apps.VoteConfig",
 ]
 
 MIDDLEWARE = [
