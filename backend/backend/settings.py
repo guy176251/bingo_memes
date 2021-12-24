@@ -149,7 +149,9 @@ DEBUG = bool(os.environ.get("DEBUG", True))
 SECRET_KEY = os.environ.get("SECRET_KEY", secrets.token_hex(16))
 
 # 'DJANGO_ALLOWED_HOSTS' should be a single string of hosts with a space between each.
-ALLOWED_HOSTS = re.split(r"\s+", os.environ.get("ALLOWED_HOSTS", "localhost 127.0.0.1"))
+ALLOWED_HOSTS = re.split(
+    r"\s+", "localhost 127.0.0.1" if DEBUG else os.environ["ALLOWED_HOSTS"]
+)
 CSRF_TRUSTED_ORIGINS = ALLOWED_HOSTS
 CORS_ALLOWED_ORIGINS = [f"http://{h}" for h in ALLOWED_HOSTS]
 
