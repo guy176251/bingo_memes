@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 import re
 import os
+import secrets
 from pathlib import Path
 
 # from typing import Tuple
@@ -143,31 +144,32 @@ SESSION_COOKIE_HTTPONLY = True
 # CSRF_COOKIE_SECURE = True
 # SESSION_COOKIE_SECURE = True
 
-SECRET_KEY = os.environ["SECRET_KEY"]
-DEBUG = bool(os.environ["DEBUG"])
+# Should be a switch for various settings
+DEBUG = bool(os.environ.get("DEBUG", True))
+SECRET_KEY = os.environ.get("SECRET_KEY", secrets.token_hex(16))
 
 # 'DJANGO_ALLOWED_HOSTS' should be a single string of hosts with a space between each.
-ALLOWED_HOSTS = re.split(r"\s+", os.environ["ALLOWED_HOSTS"])
+ALLOWED_HOSTS = re.split(r"\s+", os.environ.get("ALLOWED_HOSTS", "localhost 127.0.0.1"))
 CSRF_TRUSTED_ORIGINS = ALLOWED_HOSTS
 CORS_ALLOWED_ORIGINS = [f"http://{h}" for h in ALLOWED_HOSTS]
 
-build_db = {
-    "ENGINE": "django.db.backends.sqlite3",
-    "NAME": "build_db.sqlite3",
-}
-
-prod_db = {
-    "ENGINE": "django.db.backends.postgresql",
-    "NAME": os.environ["DB_NAME"],
-    "USER": os.environ["DB_USER"],
-    "PASSWORD": os.environ["DB_PASSWORD"],
-    "HOST": os.environ["DB_HOST"],
-    "PORT": os.environ["DB_PORT"],
-}
-
 # defaulting to False would save setting it on various servers
-BUILD = bool(os.environ.get("BUILD", 0))
-DATABASES = {"default": build_db if BUILD else prod_db}
+# BUILD = bool(os.environ.get("BUILD", 0))
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": "debug_db.sqlite3",
+    }
+    if DEBUG
+    else {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.environ["DB_NAME"],
+        "USER": os.environ["DB_USER"],
+        "PASSWORD": os.environ["DB_PASSWORD"],
+        "HOST": os.environ["DB_HOST"],
+        "PORT": os.environ["DB_PORT"],
+    }
+}
 
 DEFAULT_RENDERER_CLASSES: list[str] = ["rest_framework.renderers.JSONRenderer"]
 

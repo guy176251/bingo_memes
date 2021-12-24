@@ -28,8 +28,7 @@ ENV PYTHONUNBUFFERED 1
 # install dependencies
 RUN pip install poetry
 COPY ./backend/poetry.lock ./backend/pyproject.toml ./
-RUN poetry export -f requirements.txt --output requirements.txt
-RUN pip install --no-cache-dir --upgrade -r /app/requirements.txt
+RUN poetry export | pip install -r /dev/stdin
 
 # copy backend
 COPY ./backend ./
