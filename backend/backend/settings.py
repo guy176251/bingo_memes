@@ -33,13 +33,15 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "corsheaders",
     "rest_framework",
+    "ninja_jwt",
+    "ninja_extra",
     # "api.apps.ApiConfig",
     "user.apps.UserConfig",
-    "category.apps.CategoryConfig",
-    "card.apps.CardConfig",
-    "follow.apps.FollowConfig",
-    "subscribe.apps.SubscribeConfig",
-    "vote.apps.VoteConfig",
+    # "category.apps.CategoryConfig",
+    # "card.apps.CardConfig",
+    # "follow.apps.FollowConfig",
+    # "subscribe.apps.SubscribeConfig",
+    # "vote.apps.VoteConfig",
 ]
 
 MIDDLEWARE = [
@@ -185,3 +187,5 @@ if DEBUG:
     DEFAULT_RENDERER_CLASSES.append("rest_framework.renderers.BrowsableAPIRenderer")
 
 REST_FRAMEWORK = {"DEFAULT_RENDERER_CLASSES": DEFAULT_RENDERER_CLASSES}
+
+AUTH_USER_MODEL = "user.AuthUser"

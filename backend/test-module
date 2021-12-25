@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+# removes all migration files
+rm $(fd -I -p "migrations/\d+.*\.py")
+poetry run ./manage.py makemigrations
+poetry run ./manage.py test $1 #--keepdb

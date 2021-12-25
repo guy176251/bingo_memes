@@ -4,8 +4,11 @@
 __pycache__/
 .mypy_cache/
 
-# api
+# backend
 # /backend/api/migrations
+**/migrations/**
+!**/migrations/__init__.py
+debug_db.sqlite3
 
 # frontend
 /frontend/node_modules
