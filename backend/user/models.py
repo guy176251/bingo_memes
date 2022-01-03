@@ -43,7 +43,7 @@ class AuthUser(AbstractUser):
     Custom user to use email instead of username for authentication
     """
 
-    email = models.EmailField("Email Address", unique=True)
+    # email = models.EmailField("Email Address", unique=True)
 
     # username = None
     # objects = UserManager()
@@ -60,6 +60,24 @@ class SiteUser(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     score = models.IntegerField(default=0)
-    # followers = models.ManyToManyField(
-    #     "self", through=Follow, related_name="following", symmetrical=False
-    # )
+    following = models.ManyToManyField(
+        "self", through="Follow", related_name="followers", symmetrical=False
+    )
+
+
+class Follow(models.Model):
+    follower = models.ForeignKey(
+        SiteUser, on_delete=models.CASCADE, related_name="follows_to"
+    )
+    followed = models.ForeignKey(
+        SiteUser, on_delete=models.CASCADE, related_name="follows_from"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        # unique_together = ['user', 'following']
+        constraints = [
+            models.UniqueConstraint(
+                fields=["followed_id", "follower_id"], name="unique_follow"
+            )
+        ]

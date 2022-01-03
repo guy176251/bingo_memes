@@ -16,12 +16,23 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
-from user.api import api
+from user.api import api as user_api
+from category.api import api as category_api
+from card.api import api as card_api
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     # path("", include("api.urls")),
-    path("user/", api.urls),
+    path(
+        "api/",
+        include(
+            [
+                path("user/", user_api.urls),
+                path("category/", category_api.urls),
+                path("card/", card_api.urls),
+            ]
+        ),
+    )
     # path("card/", include("card.urls")),
     # path("category/", include("category.urls")),
     # path("follow/", include("follow.urls")),

@@ -3,7 +3,7 @@ from django.db import models
 from user.models import SiteUser
 
 
-class BingoCardCategory(models.Model):
+class Category(models.Model):
     name = models.CharField(max_length=20, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
     icon_url = models.CharField(max_length=2000, default="")
@@ -20,3 +20,17 @@ class BingoCardCategory(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
+
+
+class Subscription(models.Model):
+    user = models.ForeignKey(SiteUser, on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        # unique_together = ['user', 'category']
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "category"], name="unique_subscription"
+            )
+        ]

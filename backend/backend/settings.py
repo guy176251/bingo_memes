@@ -32,13 +32,14 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "corsheaders",
-    "rest_framework",
+    # "rest_framework",
+    "ninja",
     "ninja_jwt",
     "ninja_extra",
     # "api.apps.ApiConfig",
     "user.apps.UserConfig",
-    # "category.apps.CategoryConfig",
-    # "card.apps.CardConfig",
+    "category.apps.CategoryConfig",
+    "card.apps.CardConfig",
     # "follow.apps.FollowConfig",
     # "subscribe.apps.SubscribeConfig",
     # "vote.apps.VoteConfig",
@@ -160,7 +161,7 @@ SECRET_KEY = os.environ.get("SECRET_KEY", secrets.token_hex(16))
 ALLOWED_HOSTS = re.split(
     r"\s+", "localhost 127.0.0.1" if DEBUG else os.environ["ALLOWED_HOSTS"]
 )
-CSRF_TRUSTED_ORIGINS = ALLOWED_HOSTS
+CSRF_TRUSTED_ORIGINS = [f"http://{h}" for h in ALLOWED_HOSTS]
 CORS_ALLOWED_ORIGINS = [f"http://{h}" for h in ALLOWED_HOSTS]
 
 # defaulting to False would save setting it on various servers

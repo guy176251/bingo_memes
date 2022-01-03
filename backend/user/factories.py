@@ -25,6 +25,7 @@ class AuthUserFactory(DjangoModelFactory):
         model = AuthUser
 
     email = factory.Faker("email")
+    username = factory.Faker("first_name")
     password = factory.LazyFunction(lambda: make_password("pass"))
     site_user = factory.RelatedFactory(
         SiteUserFactory, factory_related_name="auth_user"
