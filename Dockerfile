@@ -34,8 +34,8 @@ RUN poetry export | pip install -r /dev/stdin
 COPY ./backend ./
 
 # tests
-RUN mypy .
-RUN flake8 .
+#RUN mypy .
+#RUN flake8 .
 
 # copy frontend static files 
 RUN rm -rf /usr/share/nginx/html/*
