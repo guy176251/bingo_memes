@@ -54,7 +54,7 @@ class EndpointTest(TestCase):
         user_obj = AuthUserFactory()
         # default password for auth user is 'pass'
         resp = self.post_json(
-            "/api/user/token/pair", {"username": user_obj.username, "password": "pass"}
+            "/api/token/pair", {"username": user_obj.username, "password": "pass"}
         )
         self.assertEqual(resp.status_code, 200)
         creds = resp.json()
@@ -75,7 +75,7 @@ class EndpointTest(TestCase):
 
         # login
         resp = self.post_json(
-            "/api/user/token/pair", {"username": follower.username, "password": "pass"}
+            "/api/token/pair", {"username": follower.username, "password": "pass"}
         )
         self.assertEqual(resp.status_code, 200)
         creds = resp.json()
@@ -111,10 +111,3 @@ class EndpointTest(TestCase):
         # resp = self.client.get(f"/api/user/{user1.site_user.id}")
         # pprint_color(resp.json())
         # self.assertEqual(resp.status_code, 200)
-
-    def test_redirect(self):
-        resp = self.client.get("/api/user/go_somewhere_else")
-        self.assertEqual(resp.status_code, 200)
-        users = resp.json()
-        pprint_color(users)
-        # self.assertEqual(len(users["results"]), 2)

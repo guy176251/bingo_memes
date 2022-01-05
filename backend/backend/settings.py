@@ -37,12 +37,10 @@ INSTALLED_APPS = [
     "ninja_jwt",
     "ninja_extra",
     # "api.apps.ApiConfig",
+    "generics.apps.GenericsConfig",
     "user.apps.UserConfig",
     "category.apps.CategoryConfig",
     "card.apps.CardConfig",
-    # "follow.apps.FollowConfig",
-    # "subscribe.apps.SubscribeConfig",
-    # "vote.apps.VoteConfig",
 ]
 
 MIDDLEWARE = [
@@ -155,14 +153,27 @@ SESSION_COOKIE_HTTPONLY = True
 
 # Should be a switch for various settings
 DEBUG = bool(os.environ.get("DEBUG", True))
-SECRET_KEY = os.environ.get("SECRET_KEY", secrets.token_hex(16))
+SECRET_KEY = os.environ["SECRET_KEY"]
 
 # 'DJANGO_ALLOWED_HOSTS' should be a single string of hosts with a space between each.
-ALLOWED_HOSTS = re.split(
-    r"\s+", "localhost 127.0.0.1" if DEBUG else os.environ["ALLOWED_HOSTS"]
+# ALLOWED_HOSTS = re.split(
+#     r"\s+", "http://localhost:8000 http://localhost:3000 http://127.0.0.1" if DEBUG else os.environ["ALLOWED_HOSTS"]
+# )
+# CSRF_TRUSTED_ORIGINS = [f"http://{h}" for h in ALLOWED_HOSTS]
+# CORS_ALLOWED_ORIGINS = [f"http://{h}" for h in ALLOWED_HOSTS]
+
+host_string = "localhost 127.0.0.1 [::1]" if DEBUG else os.environ["ALLOWED_HOSTS"]
+ports = ["", ":8000", ":3000"] if DEBUG else [""]
+proto = "http://" if DEBUG else "https://"
+
+hosts = re.split(r"\s+", host_string)
+full_hosts: list[str] = sum(
+    [[f"{proto}{host}{port}" for host in hosts] for port in ports], start=[]
 )
-CSRF_TRUSTED_ORIGINS = [f"http://{h}" for h in ALLOWED_HOSTS]
-CORS_ALLOWED_ORIGINS = [f"http://{h}" for h in ALLOWED_HOSTS]
+
+ALLOWED_HOSTS = hosts
+CSRF_TRUSTED_ORIGINS = full_hosts
+CORS_ALLOWED_ORIGINS = full_hosts
 
 # defaulting to False would save setting it on various servers
 # BUILD = bool(os.environ.get("BUILD", 0))

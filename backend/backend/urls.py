@@ -15,27 +15,23 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from ninja_jwt.controller import NinjaJWTDefaultController
+from ninja_extra import NinjaExtraAPI
 
-from user.api import api as user_api
-from category.api import api as category_api
-from card.api import api as card_api
+from user.api import UserController, set_user_exceptions
+
+api = NinjaExtraAPI()
+
+api.register_controllers(
+    NinjaJWTDefaultController,
+    UserController,
+)
+
+exception_handlers = [set_user_exceptions]
+for set_handler in exception_handlers:
+    set_handler(api)
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    # path("", include("api.urls")),
-    path(
-        "api/",
-        include(
-            [
-                path("user/", user_api.urls),
-                path("category/", category_api.urls),
-                path("card/", card_api.urls),
-            ]
-        ),
-    )
-    # path("card/", include("card.urls")),
-    # path("category/", include("category.urls")),
-    # path("follow/", include("follow.urls")),
-    # path("vote/", include("vote.urls")),
-    # path("subscribe/", include("subscribe.urls")),
+    path("api/", api.urls),
 ]

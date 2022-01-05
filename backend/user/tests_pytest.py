@@ -49,7 +49,7 @@ def test_login(client: Client):
     user_obj = AuthUserFactory()
     # default password for auth user is 'pass'
     resp = client.post(
-        "/api/user/token/pair",
+        "/api/token/pair",
         {"username": user_obj.username, "password": "pass"},
         "application/json",
     )
@@ -92,10 +92,11 @@ def test_not_found(client: Client):
 def test_follow(client: Client):
     follower = AuthUserFactory()
     followed = AuthUserFactory()
+    pprint_color({"username": follower.username, "follower": follower})
 
     # login
     resp = client.post(
-        "/api/user/token/pair",
+        "/api/token/pair",
         {"username": follower.username, "password": "pass"},
         "application/json",
     )
