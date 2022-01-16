@@ -9,7 +9,7 @@ __pycache__/
 **/migrations/**
 !**/migrations/__init__.py
 debug_db.sqlite3
-/django_static
+/backend/django_static
 
 # frontend
 /frontend/node_modules
