@@ -17,7 +17,9 @@ import logging
 from pathlib import Path
 from datetime import timedelta
 
-# from typing import Tuple
+"""
+DON'T FORGET TO SET DEBUG FOR NPLUSONE THINGS
+"""
 
 # from decouple import config, Csv
 
@@ -56,7 +58,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "generics.middleware.metric_middleware",
+    "core.middleware.metric_middleware",
     "nplusone.ext.django.NPlusOneMiddleware",
 ]
 
@@ -198,13 +200,6 @@ DATABASES = {
         "PORT": os.environ["DB_PORT"],
     }
 }
-
-DEFAULT_RENDERER_CLASSES: list[str] = ["rest_framework.renderers.JSONRenderer"]
-
-if DEBUG:
-    DEFAULT_RENDERER_CLASSES.append("rest_framework.renderers.BrowsableAPIRenderer")
-
-REST_FRAMEWORK = {"DEFAULT_RENDERER_CLASSES": DEFAULT_RENDERER_CLASSES}
 
 AUTH_USER_MODEL = "user.AuthUser"
 ATOMIC_REQUESTS = False

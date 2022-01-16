@@ -4,7 +4,7 @@ from django.test import Client
 
 from .factories import CategoryFactory
 from user.factories import AuthUserFactory
-from tools import pprint_color
+from core.tools import pprint_color
 
 
 @pytest.mark.django_db

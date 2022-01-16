@@ -45,3 +45,7 @@ COPY --from=builder /app/build /usr/share/nginx/html
 COPY ./docker/prestart.sh ./
 COPY ./docker/print-nginx-conf.sh ./
 COPY ./docker/uwsgi.ini ./
+
+# collect and move django static files
+RUN ./manage.py collectstatic --noinput
+RUN mv /app/django_static /usr/share/nginx/html
