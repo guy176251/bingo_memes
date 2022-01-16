@@ -1,3 +1,4 @@
+from django.db.models import Sum
 from django.dispatch import receiver
 from django.db.models.signals import (
     post_save,
@@ -36,20 +37,21 @@ def create_hashtags(card: Card):
 
 
 def adjust_card_scores(card: Card):
-    up = card.votes.filter(up=True).count()
-    total = card.votes.count()
+    votes = card.votes
+    up = votes.filter(up=True).count()
+    total = votes.count()
     score = up - (total - up)
 
     card.hot = hot_score(up, total, card.created_timestamp)
     card.best = best_score(up, total)
     card.score = score
 
-    with atomic():
-        card.save()
+    # with atomic():
+    card.save()
 
-        author = card.author
-        author.score = sum(author.cards_created.values_list("score", flat=True))
-        author.save()
+    author = card.author
+    author.score = author.cards_created.aggregate(Sum("score"))["score__sum"]
+    author.save()
 
 
 @receiver(post_save, sender=Card)

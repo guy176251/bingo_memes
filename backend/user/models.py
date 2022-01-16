@@ -54,8 +54,8 @@ class AuthUser(AbstractUser):
 
 class SiteUser(models.Model):
     username = models.CharField(max_length=20)
-    auth_user = models.OneToOneField(
-        AuthUser, related_name="site_user", on_delete=models.CASCADE
+    auth = models.OneToOneField(
+        AuthUser, related_name="site_user", on_delete=models.CASCADE, null=True
     )
 
     created_at = models.DateTimeField(auto_now_add=True)

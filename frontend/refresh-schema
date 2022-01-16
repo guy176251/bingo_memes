@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+wget -O public/static/openapi.json http://127.0.0.1:8000/api/openapi.json
+typegen http://127.0.0.1:8000/api/openapi.json > src/api/client.d.ts

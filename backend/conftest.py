@@ -8,7 +8,7 @@ from user.models import AuthUser
 def client_auth():
     def authorizer(client: Client, user: AuthUser):
         resp = client.post(
-            "/api/user/token/pair",
+            "/api/token/pair",
             {"username": user.username, "password": "pass"},
             "application/json",
         )

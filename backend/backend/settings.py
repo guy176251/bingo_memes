@@ -13,7 +13,9 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 import re
 import os
 import secrets
+import logging
 from pathlib import Path
+from datetime import timedelta
 
 # from typing import Tuple
 
@@ -32,12 +34,14 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "corsheaders",
+    "nplusone.ext.django",
     # "rest_framework",
     "ninja",
     "ninja_jwt",
     "ninja_extra",
     # "api.apps.ApiConfig",
-    "generics.apps.GenericsConfig",
+    # "generics.apps.GenericsConfig",
+    "core.apps.CoreConfig",
     "user.apps.UserConfig",
     "category.apps.CategoryConfig",
     "card.apps.CardConfig",
@@ -52,6 +56,8 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "generics.middleware.metric_middleware",
+    "nplusone.ext.django.NPlusOneMiddleware",
 ]
 
 ROOT_URLCONF = "backend.urls"
@@ -201,3 +207,35 @@ if DEBUG:
 REST_FRAMEWORK = {"DEFAULT_RENDERER_CLASSES": DEFAULT_RENDERER_CLASSES}
 
 AUTH_USER_MODEL = "user.AuthUser"
+ATOMIC_REQUESTS = False
+
+# nplusone
+
+NPLUSONE_LOGGER = logging.getLogger("nplusone")
+NPLUSONE_LOG_LEVEL = logging.WARNING
+NPLUSONE_RAISE = False
+
+
+# Logging
+
+LOGGING = {
+    "version": 1,
+    "handlers": {
+        "console": {"class": "logging.StreamHandler"},
+    },
+    "loggers": {
+        "nplusone": {
+            "handlers": ["console"],
+            "level": "WARN",
+        },
+        "debug": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+        },
+    },
+}
+
+NINJA_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=30),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=60),
+}

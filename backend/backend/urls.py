@@ -18,18 +18,31 @@ from django.urls import path, include
 from ninja_jwt.controller import NinjaJWTDefaultController
 from ninja_extra import NinjaExtraAPI
 
-from user.api import UserController, set_user_exceptions
+# from user.api import UserController, set_user_exceptions
+from core.auth import JWTOrReadOnlyAuth
+from user.api import add_user_exceptions, router as user_router
+from category.api import add_category_exceptions, router as category_router
+from card.api import add_card_exceptions, router as card_router
 
-api = NinjaExtraAPI()
+api = NinjaExtraAPI(auth=JWTOrReadOnlyAuth())
 
 api.register_controllers(
     NinjaJWTDefaultController,
-    UserController,
+    # UserController,
 )
 
-exception_handlers = [set_user_exceptions]
-for set_handler in exception_handlers:
-    set_handler(api)
+api.add_router("/user/", user_router)
+api.add_router("/category/", category_router)
+api.add_router("/card/", card_router)
+
+exception_handlers = [
+    add_user_exceptions,
+    add_card_exceptions,
+    add_category_exceptions,
+]
+
+for add_handler in exception_handlers:
+    add_handler(api)
 
 urlpatterns = [
     path("admin/", admin.site.urls),
