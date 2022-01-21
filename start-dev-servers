@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+tmux new -d -s bingo_memes 'cd backend; poetry run env DJANGO_SECRET_KEY=poop ./manage.py runserver'
+tmux split-window -t bingo_memes 'cd frontend; npm start'

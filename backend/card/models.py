@@ -93,3 +93,6 @@ class Vote(models.Model):
                 fields=["user", "card"], name="user_cant_vote_on_same_card_twice"
             )
         ]
+
+    def __str__(self):
+        return f"(card_id = {self.card_id}, user_id = {self.user_id}, up = {self.up})"

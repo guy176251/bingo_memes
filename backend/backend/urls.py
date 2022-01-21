@@ -13,27 +13,26 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.contrib import admin
 from django.urls import path, include
-from ninja_jwt.controller import NinjaJWTDefaultController
 from ninja_extra import NinjaExtraAPI
+from ninja_jwt.controller import NinjaJWTDefaultController
 
-# from user.api import UserController, set_user_exceptions
 from core.auth import JWTOrReadOnlyAuth
 from user.api import add_user_exceptions, router as user_router
 from category.api import add_category_exceptions, router as category_router
 from card.api import add_card_exceptions, router as card_router
 
-api = NinjaExtraAPI(auth=JWTOrReadOnlyAuth())
+api = NinjaExtraAPI()
 
-api.register_controllers(
-    NinjaJWTDefaultController,
-    # UserController,
-)
+api.register_controllers(NinjaJWTDefaultController)
 
-api.add_router("/user/", user_router)
-api.add_router("/category/", category_router)
-api.add_router("/card/", card_router)
+jwt_read_only = JWTOrReadOnlyAuth()
+
+api.add_router("/user/", user_router, auth=jwt_read_only)
+api.add_router("/category/", category_router, auth=jwt_read_only)
+api.add_router("/card/", card_router, auth=jwt_read_only)
 
 exception_handlers = [
     add_user_exceptions,

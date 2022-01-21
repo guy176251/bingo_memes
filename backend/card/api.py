@@ -1,18 +1,21 @@
 import logging
-from django.db.models import Case, Value, When, Q
-from django.db import IntegrityError
-from typing import Optional, Union
 from datetime import datetime
-from ninja import ModelSchema, Schema, Router, Query
+from typing import Optional
+
+from category.api import CategoryOutSchema
+from category.models import Category
+from core.auth import JWTOrReadOnlyAuth
+from core.tools import pprint_color
+from django.db import IntegrityError
+from django.db.models import (Case, Exists, F, OuterRef, Q, QuerySet, Value,
+                              When)
+from ninja import ModelSchema, Query, Router, Schema
 from ninja.errors import ValidationError
-from ninja.pagination import paginate, PageNumberPagination
+from ninja.pagination import PageNumberPagination, paginate
 from pydantic import HttpUrl
+from user.api import UserSchema
 
 from .models import Card, Vote
-from category.models import Category
-from user.api import UserSchema
-from category.api import CategoryOutSchema
-from core.tools import pprint_color
 
 router = Router(tags=["card"])
 logger = logging.getLogger("debug")
@@ -69,7 +72,7 @@ class CardOutListSchema(Schema):
     best: float
     hot: float
     score: int
-    upvoted: Union[bool, None]
+    upvoted: Optional[bool]
 
 
 class CardOutSchema(CardOutListSchema, TileSchema):
@@ -90,8 +93,22 @@ def add_card_exceptions(api):
         )
 
 
-def when_vote_is_(up, user):
-    return When(Q(votes__user_id=user.id) & Q(votes__up=up), then=up)
+def annotated_cards(cards: QuerySet, user):
+    upvoted_cards = cards.annotate(
+        upvoted=Case(
+            When(
+                Exists(Vote.objects.filter(card=OuterRef("pk"), user=user, up=True)),
+                then=True,
+            ),
+            When(
+                Exists(Vote.objects.filter(card=OuterRef("pk"), user=user, up=False)),
+                then=False,
+            ),
+            default=None,
+        )
+    )
+    # breakpoint()
+    return upvoted_cards
 
 
 def outgoing_cards(auth):
@@ -103,14 +120,7 @@ def outgoing_cards(auth):
     cards = Card.objects.prefetch_related("author", "hashtags")
     if auth.is_authenticated:
         print("Calculating Votes: True")
-        site_user = auth.site_user
-        return cards.annotate(
-            upvoted=Case(
-                when_vote_is_(True, site_user),
-                when_vote_is_(False, site_user),
-                default=None,
-            )
-        )
+        return annotated_cards(cards, auth.site_user)
     else:
         print("Calculating Votes: False")
         return cards
@@ -118,13 +128,13 @@ def outgoing_cards(auth):
 
 @router.get("{int:card_id}", response=CardOutSchema)
 def get_card(request, card_id: int):
-    return outgoing_cards(request.user).get(pk=card_id)
+    cards = outgoing_cards(request.user)
+    return cards.get(pk=card_id)
 
 
 @router.get("", response=list[CardOutListSchema], url_name="list")
 @paginate(PageNumberPagination)
 def list_cards(request, hashtags: list[str] = Query(None), **kwargs):
-    pprint_color(hashtags)
     cards = outgoing_cards(request.user)
     if hashtags:
         return cards.filter(hashtags__name__in=hashtags).distinct()

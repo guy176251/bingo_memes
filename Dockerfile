@@ -28,14 +28,15 @@ ENV PYTHONUNBUFFERED 1
 # install dependencies
 RUN pip install poetry
 COPY ./backend/poetry.lock ./backend/pyproject.toml ./
-RUN poetry export | pip install -r /dev/stdin
+RUN poetry export --without-hashes | pip install -r /dev/stdin
 
 # copy backend
 COPY ./backend ./
 
 # tests
-RUN mypy .
+RUN mypy --cache-dir=/dev/null .
 RUN flake8 .
+#RUN pytest
 
 # copy frontend static files 
 RUN rm -rf /usr/share/nginx/html/*
@@ -47,5 +48,5 @@ COPY ./docker/print-nginx-conf.sh ./
 COPY ./docker/uwsgi.ini ./
 
 # collect and move django static files
-RUN ./manage.py collectstatic --noinput
+RUN DJANGO_SECRET_KEY=placeholder ./manage.py collectstatic --noinput
 RUN mv /app/django_static /usr/share/nginx/html

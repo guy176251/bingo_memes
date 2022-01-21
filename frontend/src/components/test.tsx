@@ -8,7 +8,7 @@ import { getAPIClient } from "../api/axios";
 import { Components } from "../api/client";
 
 export function TestComponent() {
-    const [cards, setCards] = useState<Components.Schemas.CardOutSchema[]>([]);
+    const [cards, setCards] = useState<Components.Schemas.CardOutListSchema[]>([]);
 
     const doRequest = async () => {
         const client = await getAPIClient();
@@ -48,7 +48,7 @@ export function CardComponent(props: CardProps) {
         if (card || !cardId) return;
         const client = await getAPIClient();
         const resp = await client.card_api_get_card(cardId);
-        if (resp.status == 200) setCard(resp.data);
+        if (resp.status === 200) setCard(resp.data);
     };
 
     useEffect(() => {

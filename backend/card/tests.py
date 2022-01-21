@@ -1,10 +1,10 @@
 import pytest
-from django.test import Client
-
-from .factories import CardFactory
-from user.factories import AuthUserFactory
 from category.factories import CategoryFactory
 from core.tools import pprint_color
+from django.test import Client
+from user.factories import AuthUserFactory, SiteUserFactory
+
+from .factories import CardFactory
 
 
 @pytest.mark.django_db
@@ -24,7 +24,7 @@ def test_get_card(client: Client):
 
 @pytest.mark.django_db
 def test_create_card(client: Client, client_auth):
-    user = AuthUserFactory()
+    user = SiteUserFactory()
     category = CategoryFactory()
     client_auth(client, user)
     payload = {
@@ -39,8 +39,8 @@ def test_create_card(client: Client, client_auth):
 
 @pytest.mark.parametrize("up, expected_score", [(True, 2), (False, 0)])
 @pytest.mark.django_db
-def test_vote_card(client: Client, client_auth, up, expected_score):
-    user = AuthUserFactory()
+def test_vote_card(client: Client, client_auth, request_or_fail, up, expected_score):
+    user = SiteUserFactory()
     card = CardFactory()
     payload = {"card_id": card.id, "up": up}
 
@@ -51,12 +51,10 @@ def test_vote_card(client: Client, client_auth, up, expected_score):
     client_auth(client, user)
 
     # test vote toggle-like function
-    for score in [expected_score, card.score]:
-        resp = client.post("/api/card/vote", payload, "application/json")  # first vote
-        assert resp.status_code == 200
-
-        resp = client.get(f"/api/card/{card.id}")
-        assert resp.json()["score"] == score
+    for score in [expected_score, 1]:
+        request_or_fail(client.post, 200, "/api/card/vote", payload, "application/json")
+        data = request_or_fail(client.get, 200, f"/api/card/{card.id}")
+        assert data["score"] == score
 
     # test sending different up values
     for up, score in [(True, 2), (False, 0)]:

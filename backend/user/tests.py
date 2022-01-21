@@ -18,7 +18,7 @@ def test_get_all_users(client: Client):
     num_of_users = 3
 
     for _ in range(num_of_users):
-        AuthUserFactory()
+        SiteUserFactory()
 
     resp = client.get("/api/user/")
     assert resp.status_code == 200
@@ -46,7 +46,7 @@ def test_create_user(client: Client):
 
 @pytest.mark.django_db
 def test_login(client: Client, client_auth):
-    user_obj = AuthUserFactory()
+    user_obj = SiteUserFactory()
     client_auth(client, user_obj)
     resp = client.get("/api/user/is_logged_in")
     assert resp.status_code == 200
@@ -78,8 +78,8 @@ def test_not_found(client: Client):
 
 @pytest.mark.django_db
 def test_follow(client: Client, client_auth):
-    follower = AuthUserFactory()
-    followed = AuthUserFactory()
+    follower = SiteUserFactory()
+    followed = SiteUserFactory()
     client_auth(client, follower)
 
     # follow should pass

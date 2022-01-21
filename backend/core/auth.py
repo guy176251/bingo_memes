@@ -54,4 +54,5 @@ class JWTOrReadOnlyAuth(JWTBaseAuthentication, HttpBearerOrReadOnly):
     """
 
     def authenticate(self, request: HttpRequest, token: str) -> Any:
-        return self.jwt_authenticate(request, token)
+        user = self.jwt_authenticate(request, token)
+        return user

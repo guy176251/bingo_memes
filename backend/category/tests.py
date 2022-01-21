@@ -1,68 +1,67 @@
 import pytest
-from faker import Faker
+from core.tools import pprint_color
 from django.test import Client
+from faker import Faker
+from user.factories import AuthUserFactory, SiteUserFactory
 
 from .factories import CategoryFactory
-from user.factories import AuthUserFactory
-from core.tools import pprint_color
 
 
 @pytest.mark.django_db
 def test_factory():
     CategoryFactory()
-    # pprint_color(category)
 
 
 @pytest.mark.django_db
-def test_retrieve_category(client: Client):
+def test_retrieve_category(client: Client, request_or_fail):
     category = CategoryFactory()
-    resp = client.get(f"/api/category/{category.id}")
-    assert resp.status_code == 200
-    # pprint_color(resp.json())
+    request_or_fail(client.get, 200, f"/api/category/{category.id}")
 
 
 @pytest.mark.django_db
-def test_subscribe(client: Client, client_auth):
+def test_subscribe(client: Client, client_auth, request_or_fail):
     category = CategoryFactory()
-    user = AuthUserFactory()
+    user = SiteUserFactory()
     client_auth(client, user)
-    resp = client.post(
-        "/api/category/subscribe", {"category_id": category.id}, "application/json"
-    )
-    assert resp.status_code == 200
-    # pprint_color(resp.json())
+
+    # test subscription toggle
+    for i in range(1, 4):
+        request_or_fail(
+            client.post,
+            200,
+            "/api/category/subscribe",
+            {"category_id": category.id},
+            "application/json",
+        )
+        data = request_or_fail(client.get, 200, f"/api/category/{category.id}")
+        assert data['subscribed'] == bool(i % 2)
 
 
 @pytest.mark.django_db
-def test_list_categories(client: Client):
-    num_of_categories = 5
-    for _ in range(num_of_categories):
-        CategoryFactory()
-    resp = client.get("/api/category/")
-    assert resp.status_code == 200
-    data = resp.json()
+def test_list_categories(client: Client, request_or_fail):
+    CategoryFactory()
+    data = request_or_fail(client.get, 200, "/api/category/")
     assert type(data) == list
-    assert len(data) == num_of_categories
-    # pprint_color(resp.json())
+    assert len(data) == 1
 
 
 @pytest.mark.django_db
-def test_create_category(client: Client, client_auth):
-    user = AuthUserFactory()
-    client_auth(client, user)
+def test_create_category(client: Client, client_auth, request_or_fail):
+    user = SiteUserFactory()
     fake = Faker()
-    resp = client.post(
+    client_auth(client, user)
+    request_or_fail(
+        client.post,
+        200,
         "/api/category/",
         {
-            "name": "Created Category",
+            "name": "CreatedCategory",
             "description": "some description...",
             "banner_url": fake.uri(),
             "icon_url": fake.uri(),
         },
         "application/json",
     )
-    # pprint_color(resp.json())
-    assert resp.status_code == 200
 
 
 @pytest.mark.django_db

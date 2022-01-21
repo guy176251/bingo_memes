@@ -1,4 +1,4 @@
-domains="${SERVER_NAME:-_}"
+domains="${NGINX_SERVER_NAME:-_}"
 config_file="
 
 server {

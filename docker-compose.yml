@@ -2,14 +2,14 @@ version: '3.8'
 
 services:
 
-  site_local:
+  site:
     build:
       context: .
       dockerfile: ./Dockerfile
     ports:
       - "8080:80"
     env_file:
-      - ./.env.local
+      - ./.env
     depends_on:
       - db
 
@@ -18,7 +18,7 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data/
     env_file:
-      - ./.env.local
+      - ./.env
 
 volumes:
   db_data:
