@@ -15,7 +15,7 @@ def request_or_fail():
     def wrapper(method, status_code, *args, **kwargs):
         resp = method(*args, **kwargs)
         data = resp.json()
-        pprint_color({"URL": args[0], "DATA": data})
+        # pprint_color({"URL": args[0], "DATA": data})
         assert resp.status_code == status_code
         return data
 

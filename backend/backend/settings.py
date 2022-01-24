@@ -224,3 +224,5 @@ if DEBUG:
         ]
     )
     INSTALLED_APPS.append("nplusone.ext.django")
+
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

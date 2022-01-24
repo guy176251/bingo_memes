@@ -1,20 +1,20 @@
-from django.db import models
-
-from user.models import SiteUser
+import auto_prefetch
 from category.models import Category
+from django.db import models
+from user.models import SiteUser
 
 
 def tile_field():
     return models.CharField(max_length=200)
 
 
-class Card(models.Model):
+class Card(auto_prefetch.Model):
     name = models.CharField(max_length=50)
-    author = models.ForeignKey(
+    author = auto_prefetch.ForeignKey(
         SiteUser, related_name="cards_created", on_delete=models.CASCADE
     )
 
-    category = models.ForeignKey(
+    category = auto_prefetch.ForeignKey(
         Category, related_name="cards", on_delete=models.CASCADE
     )
 
@@ -24,8 +24,11 @@ class Card(models.Model):
     edited_at = models.DateTimeField(auto_now=True)
     edited_timestamp = models.FloatField(default=0)
 
-    best = models.FloatField(default=0)  # wilson score
-    hot = models.FloatField(default=0)
+    # best = models.FloatField(default=0)  # wilson score
+    # hot = models.FloatField(default=0)
+
+    up = models.IntegerField(default=0)
+    total = models.IntegerField(default=0)
     score = models.IntegerField(default=0)
 
     tile_1 = tile_field()
@@ -63,31 +66,69 @@ class Card(models.Model):
 #     Card.add_to_class(each, models.CharField(max_length=200))
 
 
-# class Tile(models.Model):
+# class Tile(auto_prefetch.Model):
 #     text = models.CharField(max_length=200)
 #     score = models.FloatField(default=0)
-#     card = models.ForeignKey(Card, related_name="tiles", on_delete=models.CASCADE)
+#     card = auto_prefetch.ForeignKey(Card, related_name="tiles", on_delete=models.CASCADE)
 
 
-class Hashtag(models.Model):
+class Hashtag(auto_prefetch.Model):
     name = models.CharField(max_length=20, unique=True)
-    categories = models.ManyToManyField(Category, related_name="hashtags")
-    cards = models.ManyToManyField(Card, related_name="hashtags")
+    categories = models.ManyToManyField(
+        Category,
+        related_name="hashtags",
+        through="HashtagRelation",
+        # through_fields=["hashtag", "category"],
+    )
+    cards = models.ManyToManyField(
+        Card,
+        related_name="hashtags",
+        through="HashtagRelation",
+        # through_fields=["hashtag", "card"],
+    )
 
     class Meta:
         ordering = ["name"]
 
 
-class Vote(models.Model):
-    user = models.ForeignKey(SiteUser, related_name="votes", on_delete=models.CASCADE)
-
-    card = models.ForeignKey(Card, related_name="votes", on_delete=models.CASCADE)
-
-    up = models.BooleanField()
-    created_at = models.DateTimeField(auto_now_add=True)
+class HashtagRelation(auto_prefetch.Model):
+    hashtag = auto_prefetch.ForeignKey(Hashtag, on_delete=models.CASCADE)
+    card = auto_prefetch.ForeignKey(Card, on_delete=models.CASCADE)
+    category = auto_prefetch.ForeignKey(Category, on_delete=models.CASCADE)
 
     class Meta:
-        # unique_together = ["user", "card"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["hashtag", "card", "category"],
+                name="reduce_dupes",
+            ),
+            # models.UniqueConstraint(
+            #     fields=["hashtag", "card"],
+            #     name="unique_card",
+            # ),
+            # models.UniqueConstraint(
+            #     fields=["hashtag", "category"],
+            #     name="unique_category",
+            # )
+        ]
+
+
+class Vote(auto_prefetch.Model):
+    user = auto_prefetch.ForeignKey(
+        SiteUser, related_name="votes", on_delete=models.CASCADE
+    )
+    card = auto_prefetch.ForeignKey(
+        Card, related_name="votes", on_delete=models.CASCADE
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    # up = models.BooleanField()
+
+    votes_up = models.IntegerField(default=0)
+    votes_down = models.IntegerField(default=0)
+    up = models.IntegerField()
+
+    class Meta:
         constraints = [
             models.UniqueConstraint(
                 fields=["user", "card"], name="user_cant_vote_on_same_card_twice"
@@ -95,4 +136,10 @@ class Vote(models.Model):
         ]
 
     def __str__(self):
-        return f"(card_id = {self.card_id}, user_id = {self.user_id}, up = {self.up})"
+        return (
+            f"card = {self.card_id}, "
+            f"user = {self.user_id}, "
+            f"votes_down = {self.votes_down}, "
+            f"votes_up = {self.votes_up}, "
+            f"up = {self.up} "
+        )

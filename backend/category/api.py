@@ -1,6 +1,6 @@
 import re
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Set
 
 from core.auth import JWTOrReadOnlyAuth
 from django.db.models import (Case, Exists, F, OuterRef, Q, QuerySet, Value,
@@ -8,11 +8,17 @@ from django.db.models import (Case, Exists, F, OuterRef, Q, QuerySet, Value,
 from ninja import ModelSchema, Router, Schema
 from ninja.pagination import PageNumberPagination, paginate
 from pydantic import HttpUrl, validator
+from pydantic.dataclasses import dataclass as pyd_dataclass
 from user.api import UserSchema
 
 from .models import Category, Subscription
 
 router = Router(tags=["category"])
+
+
+@pyd_dataclass(eq=True, frozen=True)
+class Foo:
+    foo: str = "foo"
 
 
 class CategoryInSchema(Schema):
@@ -29,10 +35,19 @@ class CategoryInSchema(Schema):
         return name
 
 
+@pyd_dataclass(eq=True, frozen=True)
+class HashtagSchema(Schema):
+    name: str
+
+    # def __hash__(self):  # make hashable BaseModel subclass
+    #     return hash((type(self),) + tuple(self.__dict__.values()))
+
+
 class CategoryOutSchema(CategoryInSchema):
     id: int
     author: UserSchema
     created_at: datetime
+    hashtags: Set[HashtagSchema]
     is_subscribed: Optional[bool]
 
 

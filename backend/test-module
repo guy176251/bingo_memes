@@ -4,4 +4,4 @@
 rm $(fd -I -p "migrations/\d+.*\.py")
 poetry run ./manage.py makemigrations
 poetry run ./manage.py migrate
-poetry run pytest $1
+poetry run pytest $@

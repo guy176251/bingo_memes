@@ -1,15 +1,16 @@
+import auto_prefetch
 from django.db import models
 from user.models import SiteUser
 
 
-class Category(models.Model):
+class Category(auto_prefetch.Model):
     name = models.CharField(max_length=20, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
     icon_url = models.CharField(max_length=2000, default="")
     banner_url = models.CharField(max_length=2000, default="")
     description = models.CharField(max_length=200, default="")
 
-    author = models.ForeignKey(
+    author = auto_prefetch.ForeignKey(
         SiteUser, related_name="categories_created", on_delete=models.CASCADE
     )
 
@@ -21,9 +22,9 @@ class Category(models.Model):
         ordering = ["-created_at"]
 
 
-class Subscription(models.Model):
-    user = models.ForeignKey(SiteUser, on_delete=models.CASCADE)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+class Subscription(auto_prefetch.Model):
+    user = auto_prefetch.ForeignKey(SiteUser, on_delete=models.CASCADE)
+    category = auto_prefetch.ForeignKey(Category, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

@@ -1,0 +1,8 @@
+{
+  "card.tests": {
+    "test_create_card": {
+      "query-count": 4,
+      "duplicates": 0
+    }
+  }
+}

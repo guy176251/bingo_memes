@@ -25,7 +25,8 @@ def metric_middleware(get_response):
 
         # Log the results
         logger = logging.getLogger("debug")
-        logger.debug(f"\nRequest: {request.method} {request.path}")
+        logger.debug("")
+        logger.debug(f"Request: {request.method} {request.path}")
         logger.debug(f"User: {request.user}")
         logger.debug(f"Number of Queries: {total_queries}")
         logger.debug(f"Total time: {(total_time):.3f}s")

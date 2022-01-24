@@ -1,10 +1,11 @@
 import logging
 from datetime import datetime
-from typing import Optional
+from typing import Any, Optional, Union
 
 from category.api import CategoryOutSchema
 from category.models import Category
 from core.auth import JWTOrReadOnlyAuth
+from core.db import Mod, Sign
 from core.tools import pprint_color
 from django.db import IntegrityError
 from django.db.models import (Case, Exists, F, OuterRef, Q, QuerySet, Value,
@@ -15,14 +16,12 @@ from ninja.pagination import PageNumberPagination, paginate
 from pydantic import HttpUrl
 from user.api import UserSchema
 
+from .db import best_query, hot_query, upvote_query
 from .models import Card, Vote
+from .signals import adjust_card_score
 
 router = Router(tags=["card"])
 logger = logging.getLogger("debug")
-
-
-class IDSchema(Schema):
-    id: int
 
 
 class TileSchema(Schema):
@@ -60,10 +59,11 @@ class HashtagSchema(Schema):
 class CardInSchema(TileSchema):
     id: Optional[int]
     name: str
-    category: IDSchema
+    category_id: int
 
 
 class CardOutListSchema(Schema):
+    id: int
     name: str
     author: UserSchema
     hashtags: list[HashtagSchema]
@@ -80,7 +80,6 @@ class CardOutSchema(CardOutListSchema, TileSchema):
 
 
 class VoteSchema(Schema):
-    user_id: Optional[int]
     card_id: int
     up: bool
 
@@ -93,37 +92,36 @@ def add_card_exceptions(api):
         )
 
 
-def annotated_cards(cards: QuerySet, user):
-    upvoted_cards = cards.annotate(
-        upvoted=Case(
-            When(
-                Exists(Vote.objects.filter(card=OuterRef("pk"), user=user, up=True)),
-                then=True,
-            ),
-            When(
-                Exists(Vote.objects.filter(card=OuterRef("pk"), user=user, up=False)),
-                then=False,
-            ),
-            default=None,
-        )
-    )
-    # breakpoint()
-    return upvoted_cards
-
-
-def outgoing_cards(auth):
+def outgoing_cards(user, **list_kwargs):
     """
     Annotates `upvoted` to all cards in queryset, and prefetchs things
     that are in the `CardOutSchema`. Meant for outgoing cards.
     """
 
-    cards = Card.objects.prefetch_related("author", "hashtags")
-    if auth.is_authenticated:
-        print("Calculating Votes: True")
-        return annotated_cards(cards, auth.site_user)
+    if user.is_authenticated:
+        queries = dict(upvoted=upvote_query(user.site_user))
     else:
-        print("Calculating Votes: False")
-        return cards
+        queries = dict()
+
+    sort_types = dict(
+        hot=hot_query().desc(),
+        best=best_query().desc(),
+        new="-created_at",
+    )
+    sort = list_kwargs.pop("sort", "hot")
+    sort_by = sort_types.get(sort, hot_query)
+
+    return (
+        Card.objects.filter(**list_kwargs)
+        .prefetch_related("hashtags")
+        .annotate(
+            **queries,
+            hot=hot_query(),
+            best=best_query(),
+        )
+        .order_by(sort_by)
+        .distinct()
+    )
 
 
 @router.get("{int:card_id}", response=CardOutSchema)
@@ -134,35 +132,45 @@ def get_card(request, card_id: int):
 
 @router.get("", response=list[CardOutListSchema], url_name="list")
 @paginate(PageNumberPagination)
-def list_cards(request, hashtags: list[str] = Query(None), **kwargs):
-    cards = outgoing_cards(request.user)
+def list_cards(request, sort: str = "hot", hashtags: list[str] = Query(None), **kwargs):
+    list_kwargs: dict[str, Any] = dict(sort=sort)
     if hashtags:
-        return cards.filter(hashtags__name__in=hashtags).distinct()
-    else:
-        return cards
+        list_kwargs["hashtags__name__in"] = hashtags
+    return outgoing_cards(request.user, **list_kwargs)
 
 
 @router.post("", response=CardInSchema)
 def create_card(request, payload: CardInSchema):
-    category = Category.objects.get(pk=payload.category.id)
     data = payload.dict()
     data["author"] = request.user.site_user
-    data["category"] = category
     return Card.objects.create(**data)
 
 
 @router.post("vote")
 def create_vote(request, payload: VoteSchema):
-    data = payload.dict()
-    data["user_id"] = request.user.site_user.id
+    user_id = request.user.site_user.id
+    card_id = payload.card_id
+    up = payload.up
 
-    try:
-        vote, created = Vote.objects.get_or_create(**data)
-    except IntegrityError:
-        up = data.pop("up")
-        vote = Vote.objects.filter(**data).first()
-        vote.up = up
-        vote.save()
+    votes_up = F("votes_up")
+    votes_down = F("votes_down")
+
+    if up:
+        up_query = Case(When(Q(votes_up=0), then=1), default=0)
+        votes_up = (votes_up + 1) % 2
     else:
-        if not created:
-            vote.delete()
+        up_query = Case(When(Q(votes_down=0), then=-1), default=0)
+        votes_down = (votes_down + 1) % 2
+
+    votes_updated = Vote.objects.filter(user_id=user_id, card_id=card_id).update(
+        votes_up=votes_up,
+        votes_down=votes_down,
+        up=up_query,
+    )
+
+    if not votes_updated:
+        field = "votes_up" if up else "votes_down"
+        data = {field: 1, "up": 1 if up else -1}
+        Vote.objects.create(**data, user_id=user_id, card_id=card_id)
+
+    adjust_card_score(card_id=card_id, update=True)

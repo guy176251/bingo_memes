@@ -23,6 +23,8 @@ pytest = "^6.2.5"
 pytest-django = "^4.5.2"
 pytest-xdist = "^2.5.0"
 isort = "^5.10.1"
+pytest-django-queries = "^1.2.0"
+django-auto-prefetch = "^1.1.0"
 
 [tool.poetry.dev-dependencies]
 black = "^21.12b0"
