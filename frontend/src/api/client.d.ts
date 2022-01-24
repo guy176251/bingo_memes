@@ -127,6 +127,10 @@ declare namespace Components {
          */
         export interface CardOutListSchema {
             /**
+             * Id
+             */
+            id: number;
+            /**
              * Name
              */
             name: string;
@@ -264,6 +268,10 @@ declare namespace Components {
              * Tile 25
              */
             tile_25: string;
+            /**
+             * Id
+             */
+            id: number;
             /**
              * Name
              */
@@ -505,6 +513,10 @@ declare namespace Components {
              * Following
              */
             following: /* UserSchema */ UserSchema[];
+            /**
+             * Is Following
+             */
+            is_following?: boolean;
         }
         /**
          * UserSchema
@@ -547,7 +559,7 @@ declare namespace Components {
     }
 }
 declare namespace Paths {
-    namespace $7be42804ControllerVerifyToken {
+    namespace $814831faControllerVerifyToken {
         export type RequestBody = /* TokenVerifySerializer */ Components.Schemas.TokenVerifySerializer;
         namespace Responses {
             export type $200 = /* Schema */ Components.Schemas.Schema;
@@ -645,16 +657,16 @@ declare namespace Paths {
             export type $200 = /* CategoryOutSchema */ Components.Schemas.CategoryOutSchema[];
         }
     }
-    namespace E277fd83ControllerRefreshToken {
-        export type RequestBody = /* TokenRefreshSchema */ Components.Schemas.TokenRefreshSchema;
-        namespace Responses {
-            export type $200 = /* TokenRefreshSerializer */ Components.Schemas.TokenRefreshSerializer;
-        }
-    }
-    namespace Ea14dc65ControllerObtainToken {
+    namespace E545508cControllerObtainToken {
         export type RequestBody = /* TokenObtainPairSerializer */ Components.Schemas.TokenObtainPairSerializer;
         namespace Responses {
             export type $200 = /* TokenObtainPairOutput */ Components.Schemas.TokenObtainPairOutput;
+        }
+    }
+    namespace E6882318ControllerRefreshToken {
+        export type RequestBody = /* TokenRefreshSchema */ Components.Schemas.TokenRefreshSchema;
+        namespace Responses {
+            export type $200 = /* TokenRefreshSerializer */ Components.Schemas.TokenRefreshSerializer;
         }
     }
     namespace UserApiCreateUser {
@@ -703,36 +715,36 @@ declare namespace Paths {
             /**
              * Response
              */
-            export type $200 = /* UserSchema */ Components.Schemas.UserSchema[];
+            export type $200 = /* UserOutSchema */ Components.Schemas.UserOutSchema[];
         }
     }
 }
 
 export interface OperationMethods {
   /**
-   * 7be42804_controller_verify_token - Verify Token
+   * 814831fa_controller_verify_token - Verify Token
    */
-  '7be42804_controller_verify_token'(
+  '814831fa_controller_verify_token'(
     parameters?: Parameters<UnknownParamsObject> | null,
-    data?: Paths.$7be42804ControllerVerifyToken.RequestBody,
+    data?: Paths.$814831faControllerVerifyToken.RequestBody,
     config?: AxiosRequestConfig  
-  ): OperationResponse<Paths.$7be42804ControllerVerifyToken.Responses.$200>
+  ): OperationResponse<Paths.$814831faControllerVerifyToken.Responses.$200>
   /**
-   * ea14dc65_controller_obtain_token - Obtain Token
+   * e545508c_controller_obtain_token - Obtain Token
    */
-  'ea14dc65_controller_obtain_token'(
+  'e545508c_controller_obtain_token'(
     parameters?: Parameters<UnknownParamsObject> | null,
-    data?: Paths.Ea14dc65ControllerObtainToken.RequestBody,
+    data?: Paths.E545508cControllerObtainToken.RequestBody,
     config?: AxiosRequestConfig  
-  ): OperationResponse<Paths.Ea14dc65ControllerObtainToken.Responses.$200>
+  ): OperationResponse<Paths.E545508cControllerObtainToken.Responses.$200>
   /**
-   * e277fd83_controller_refresh_token - Refresh Token
+   * e6882318_controller_refresh_token - Refresh Token
    */
-  'e277fd83_controller_refresh_token'(
+  'e6882318_controller_refresh_token'(
     parameters?: Parameters<UnknownParamsObject> | null,
-    data?: Paths.E277fd83ControllerRefreshToken.RequestBody,
+    data?: Paths.E6882318ControllerRefreshToken.RequestBody,
     config?: AxiosRequestConfig  
-  ): OperationResponse<Paths.E277fd83ControllerRefreshToken.Responses.$200>
+  ): OperationResponse<Paths.E6882318ControllerRefreshToken.Responses.$200>
   /**
    * user_api_get_user - Get User
    */
@@ -842,33 +854,33 @@ export interface OperationMethods {
 export interface PathsDictionary {
   ['/api/token/verify']: {
     /**
-     * 7be42804_controller_verify_token - Verify Token
+     * 814831fa_controller_verify_token - Verify Token
      */
     'post'(
       parameters?: Parameters<UnknownParamsObject> | null,
-      data?: Paths.$7be42804ControllerVerifyToken.RequestBody,
+      data?: Paths.$814831faControllerVerifyToken.RequestBody,
       config?: AxiosRequestConfig  
-    ): OperationResponse<Paths.$7be42804ControllerVerifyToken.Responses.$200>
+    ): OperationResponse<Paths.$814831faControllerVerifyToken.Responses.$200>
   }
   ['/api/token/pair']: {
     /**
-     * ea14dc65_controller_obtain_token - Obtain Token
+     * e545508c_controller_obtain_token - Obtain Token
      */
     'post'(
       parameters?: Parameters<UnknownParamsObject> | null,
-      data?: Paths.Ea14dc65ControllerObtainToken.RequestBody,
+      data?: Paths.E545508cControllerObtainToken.RequestBody,
       config?: AxiosRequestConfig  
-    ): OperationResponse<Paths.Ea14dc65ControllerObtainToken.Responses.$200>
+    ): OperationResponse<Paths.E545508cControllerObtainToken.Responses.$200>
   }
   ['/api/token/refresh']: {
     /**
-     * e277fd83_controller_refresh_token - Refresh Token
+     * e6882318_controller_refresh_token - Refresh Token
      */
     'post'(
       parameters?: Parameters<UnknownParamsObject> | null,
-      data?: Paths.E277fd83ControllerRefreshToken.RequestBody,
+      data?: Paths.E6882318ControllerRefreshToken.RequestBody,
       config?: AxiosRequestConfig  
-    ): OperationResponse<Paths.E277fd83ControllerRefreshToken.Responses.$200>
+    ): OperationResponse<Paths.E6882318ControllerRefreshToken.Responses.$200>
   }
   ['/api/user/{user_id}']: {
     /**

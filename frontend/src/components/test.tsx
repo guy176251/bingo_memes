@@ -44,15 +44,19 @@ export function CardComponent(props: CardProps) {
     const [card, setCard] = useState(props.card);
     const { cardId } = useParams();
 
-    const doRequest = async () => {
+    const doRequest = async (cancelled: boolean) => {
         if (card || !cardId) return;
         const client = await getAPIClient();
         const resp = await client.card_api_get_card(cardId);
-        if (resp.status === 200) setCard(resp.data);
+        if (resp.status === 200 && !cancelled) setCard(resp.data);
     };
 
     useEffect(() => {
-        doRequest();
+        let cancelled = false;
+        doRequest(cancelled);
+        return () => {
+            cancelled = true;
+        };
     }, []);
 
     return <></>;
