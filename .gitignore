@@ -3,13 +3,16 @@
 *.pyc
 __pycache__/
 .mypy_cache/
+.old/
 
-# api
-# /backend/api/migrations
+# backend
+**/migrations/**
+!**/migrations/__init__.py
+debug_db.sqlite3
+/backend/django_static
 
 # frontend
 /frontend/node_modules
-/frontend/.old
 /frontend/build
 
 # sort_algo

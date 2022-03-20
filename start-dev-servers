@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+tmux new -d -s bingo_memes 'cd backend; while : ; do poetry run env DJANGO_SECRET_KEY=poop ./manage.py runserver 0.0.0.0:8000; done'
+tmux split-window -t bingo_memes 'cd frontend; while : ; do yarn start; done'
+tmux a -t bingo_memes

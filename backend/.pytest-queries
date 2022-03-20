@@ -1,0 +1,16 @@
+{
+  "card.tests": {
+    "test_get_card": {
+      "query-count": 2,
+      "duplicates": 0
+    },
+    "test_list_cards": {
+      "query-count": 2,
+      "duplicates": 0
+    },
+    "test_create_card": {
+      "query-count": 6,
+      "duplicates": 0
+    }
+  }
+}

@@ -1,0 +1,10 @@
+**/__pycache__
+**/.mypy_cache
+**/.old
+**/django_static
+
+**/test-module
+**/test-server
+**/reset-db
+
+**/debug_db.sqlite3

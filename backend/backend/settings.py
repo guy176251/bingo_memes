@@ -10,14 +10,25 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
-import re
+import logging
 import os
-import secrets
+import re
+import sys
+from datetime import timedelta
+from functools import partial
+from itertools import product
 from pathlib import Path
 
-# from typing import Tuple
+import django_stubs_ext
+import IPython
 
-# from decouple import config, Csv
+django_stubs_ext.monkeypatch()
+
+# https://stackoverflow.com/questions/63049908/using-ipython-with-breakpoint
+# https://stackoverflow.com/questions/53933400/ipython-embed-does-not-use-terminal-colors
+#
+# ipython breakpoint
+sys.breakpointhook = partial(IPython.embed, display_banner=False, colors="neutral")
 
 APP_NAME = "backend"
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -32,8 +43,12 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "corsheaders",
-    "rest_framework",
-    "api.apps.ApiConfig",
+    "ninja",
+    "ninja_jwt",
+    "ninja_extra",
+    "core.apps.CoreConfig",
+    "user.apps.UserConfig",
+    "card.apps.CardConfig",
 ]
 
 MIDDLEWARE = [
@@ -52,9 +67,7 @@ ROOT_URLCONF = "backend.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [
-            # REACT_BUILD_DIR
-        ],
+        "DIRS": [],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -68,28 +81,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "backend.wsgi.application"
-
-
-# Database
-# https://docs.djangoproject.com/en/3.2/ref/settings/#databases
-
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.postgresql_psycopg2",
-#         "NAME": "backend",
-#         "HOST": "localhost",
-#         "PASSWORD": config("DB_PASS"),
-#         "PORT": "",
-#     }
-# }
-
-# DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.sqlite3',
-#        'NAME': BASE_DIR / 'db.sqlite3',
-#    }
-# }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -136,46 +127,101 @@ STATICFILES_DIRS: list[Path] = [
 ]
 
 CSRF_COOKIE_SAMESITE = "Strict"
-SESSION_COOKIE_SAMESITE = "Strict"
-CSRF_COOKIE_HTTPONLY = False  # False since we will grab it via universal-cookies
-SESSION_COOKIE_HTTPONLY = True
+# SESSION_COOKIE_SAMESITE = "Strict"
+# CSRF_COOKIE_HTTPONLY = False  # False since we will grab it via universal-cookies
+# SESSION_COOKIE_HTTPONLY = True
 
 # PROD ONLY
 # CSRF_COOKIE_SECURE = True
 # SESSION_COOKIE_SECURE = True
 
-# Should be a switch for various settings
-DEBUG = bool(os.environ.get("DEBUG", True))
-SECRET_KEY = os.environ.get("SECRET_KEY", secrets.token_hex(16))
+AUTH_USER_MODEL = "user.AuthUser"
 
-# 'DJANGO_ALLOWED_HOSTS' should be a single string of hosts with a space between each.
-ALLOWED_HOSTS = re.split(
-    r"\s+", "localhost 127.0.0.1" if DEBUG else os.environ["ALLOWED_HOSTS"]
-)
-CSRF_TRUSTED_ORIGINS = ALLOWED_HOSTS
-CORS_ALLOWED_ORIGINS = [f"http://{h}" for h in ALLOWED_HOSTS]
+DEBUG = bool(int(value)) if (value := os.environ.get("DJANGO_DEBUG")) else True
 
-# defaulting to False would save setting it on various servers
-# BUILD = bool(os.environ.get("BUILD", 0))
+# needed for mypy
+SECRET_KEY = "osidjfkcjdfvoijeorig" if DEBUG else os.environ["DJANGO_SECRET_KEY"]
+
+###################
+## HOSTS/ORIGINS ##
+###################
+
+if DEBUG:
+    host_string = "localhost 127.0.0.1 [::1]"
+    ports = ["", ":8000", ":3000"]
+    protocol = "http"
+else:
+    host_string = os.environ["DJANGO_ALLOWED_HOSTS"]
+    ports = [""]
+    protocol = "https"
+
+hosts = re.split(r"\s+", host_string)
+full_hosts = [f"{protocol}://{host}{port}" for host, port in product(hosts, ports)]
+
+ALLOWED_HOSTS = hosts
+CSRF_TRUSTED_ORIGINS = full_hosts
+CORS_ALLOWED_ORIGINS = full_hosts
+
+##############
+## DATABASE ##
+##############
+
+USE_POSTGRES = bool(int(value)) if (value := os.environ.get("DJANGO_DB_USE_POSTGRES")) else False
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": "debug_db.sqlite3",
     }
-    if DEBUG
+    if not USE_POSTGRES
     else {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ["DB_NAME"],
-        "USER": os.environ["DB_USER"],
-        "PASSWORD": os.environ["DB_PASSWORD"],
-        "HOST": os.environ["DB_HOST"],
-        "PORT": os.environ["DB_PORT"],
+        "NAME": os.environ["DJANGO_DB"],
+        "USER": os.environ["DJANGO_DB_USER"],
+        "PASSWORD": os.environ["DJANGO_DB_PASSWORD"],
+        "HOST": os.environ["DJANGO_DB_HOST"],
+        "PORT": os.environ["DJANGO_DB_PORT"],
     }
 }
 
-DEFAULT_RENDERER_CLASSES: list[str] = ["rest_framework.renderers.JSONRenderer"]
+##############
+## NPLUSONE ##
+##############
 
 if DEBUG:
-    DEFAULT_RENDERER_CLASSES.append("rest_framework.renderers.BrowsableAPIRenderer")
+    NPLUSONE_LOGGER = logging.getLogger("nplusone")
+    NPLUSONE_LOG_LEVEL = logging.WARNING
+    NPLUSONE_RAISE = False
 
-REST_FRAMEWORK = {"DEFAULT_RENDERER_CLASSES": DEFAULT_RENDERER_CLASSES}
+    MIDDLEWARE.extend(
+        [
+            "core.middleware.metric_middleware",
+            "nplusone.ext.django.NPlusOneMiddleware",
+        ]
+    )
+    INSTALLED_APPS.append("nplusone.ext.django")
+
+LOGGING = {
+    "version": 1,
+    "handlers": {
+        "console": {"class": "logging.StreamHandler"},
+    },
+    "loggers": {
+        "nplusone": {
+            "handlers": ["console"],
+            "level": "WARN",
+        },
+        "debug": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+        },
+    },
+}
+
+NINJA_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(seconds=10),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=60),
+    "ROTATE_REFRESH_TOKENS": True,
+}
+
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

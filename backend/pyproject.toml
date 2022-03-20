@@ -5,20 +5,54 @@ description = "A Django/React webapp."
 authors = ["long"]
 
 [tool.poetry.dependencies]
-python = "^3.8"
-Django = "^3.2.5"
-djangorestframework = "^3.12.4"
-psycopg2-binary = "^2.9.1"
-flake8 = "^3.9.2"
-mypy = "^0.910"
+python = "^3.10"
+Django = "^4.0.3"
+cryptography = "^36.0.1"
 django-cors-headers = "^3.10.0"
+django-ninja = "^0.17.0"
+django-ninja-extra = "^0.14.4"
+django-ninja-jwt = "^5.1.8"
+email-validator = "^1.1.3"
+factory-boy = "^3.2.1"
+ipython = "^8.0.0"
+nplusone = "^1.0.0"
+psycopg2-binary = "^2.9.1"
+pytest-django-queries = "^1.2.0"
+django-auto-prefetch = "^1.1.0"
+django-stubs-ext = "^0.3.1"
+django-stubs = "^1.9.0"
+django-sql-utils = "^0.6.1"
 
 [tool.poetry.dev-dependencies]
-ipython = "^7.22.0"
-neovim = "^0.3.1"
-requests = "^2.25.1"
-black = "^21.9b0"
+pytest = "^6.2.5"
+pytest-django = "^4.5.2"
+pytest-xdist = "^2.5.0"
+isort = "^5.10.1"
+flake8 = "^4.0.1"
+mypy = "^0.941"
+black = "^22.1.0"
+httpx = "^0.22.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "backend.settings"
+addopts = "-rA --disable-warnings --no-migrations"
+python_files = ["tests.py"]
+
+[tool.black]
+line-length = 100
+exclude = "migrations"
+
+[tool.isort]
+profile = "black"
+
+[tool.mypy]
+ignore_missing_imports = true
+exclude = "migrations|conftest.py"
+plugins = ["mypy_django_plugin.main"]
+
+[tool.django-stubs]
+django_settings_module = "backend.settings"

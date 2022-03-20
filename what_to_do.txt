@@ -1,0 +1,11 @@
+rewrite:
+    - backend: drf -> django ninja
+    - frontend: structure rewrite, newer react router
+    - docker: shave down container startup time
+    - env variables: need to see which ones exist/are applicable, also need better documentation
+    - env/docker files: big cleanup/reduction
+    - postgres: move to different external port
+
+
+backend envs:
+    - DEBUG=True should mean using sqlite and nplusone, False would mean using postgres
