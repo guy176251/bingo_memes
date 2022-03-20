@@ -1,16 +1,13 @@
 import logging
-from typing import Any, Optional, Tuple
 from abc import ABC, abstractmethod
+from typing import Any, Optional
 
-from django.contrib.auth.models import AnonymousUser
 from django.conf import settings
+from django.contrib.auth.models import AnonymousUser
 from django.http import HttpRequest
-
 from ninja.compatibility import get_headers
 from ninja.security.http import HttpAuthBase
 from ninja_jwt.authentication import JWTBaseAuthentication
-from ninja_jwt.exceptions import InvalidToken
-
 
 logger = logging.getLogger("django")
 
@@ -50,7 +47,6 @@ class HttpBearerOrReadOnly(HttpAuthBase, ABC):
 class JWTOrReadOnlyAuth(JWTBaseAuthentication, HttpBearerOrReadOnly):
     """
     Same as `JWTAuth` but allows safe methods without a token.
-    TODO: change how it handles token expiration.
     """
 
     def authenticate(self, request: HttpRequest, token: str) -> Any:

@@ -7,18 +7,18 @@ FROM node:16.11.1-alpine as builder
 WORKDIR /app
 
 # Install dependencies
-COPY ./frontend/package.json ./frontend/package-lock.json ./frontend/tsconfig.json  ./
-RUN npm install
+COPY ./frontend/package.json ./frontend/yarn.lock ./frontend/tsconfig.json  ./
+RUN yarn install
 
 # Build src
 COPY ./frontend/public ./public
 COPY ./frontend/src ./src
-RUN npm run build
+RUN yarn run build
 
 
 ### Stage 2: Backend ###
 
-FROM tiangolo/uwsgi-nginx:python3.9-2021-10-02
+FROM tiangolo/uwsgi-nginx:python3.10-2021-10-26
 
 WORKDIR /app
 
@@ -30,12 +30,14 @@ RUN pip install poetry
 COPY ./backend/poetry.lock ./backend/pyproject.toml ./
 RUN poetry export --without-hashes | pip install -r /dev/stdin
 
+# RUN apt update && apt install -y netcat
+
 # copy backend
 COPY ./backend ./
 
 # tests
-RUN mypy --cache-dir=/dev/null .
-RUN flake8 .
+#RUN mypy --cache-dir=/dev/null .
+#RUN flake8 .
 #RUN pytest
 
 # copy frontend static files 

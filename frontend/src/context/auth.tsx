@@ -1,77 +1,70 @@
-import { useContext, useState, useEffect, createContext } from "react";
-import { useHistory } from "react-router-dom";
-import { UserState } from "./types";
-import api, { ApiResponse } from "./api/backend";
-import debugLog from "./debug";
+import { useContext, useState, createContext } from "react";
+import { getAuthClient, getBaseClient } from "api/client";
+import { AccessToken } from "types/api";
+import { AuthData } from "types/auth";
 
-type AuthCallback = (resp: ApiResponse) => void;
+/**
+ * Token is only stored in memory.
+ * https://stackoverflow.com/questions/68777033/storing-jwt-token-into-httponly-cookies
+ */
+export function useProvideAuth(): AuthData {
+    const [token, setToken] = useState<AccessToken>(null);
+    const isLoggedIn = Boolean(token);
 
-interface LoginProps {
-    credentials: object;
-    callback?: AuthCallback;
-}
-
-interface LogoutProps {
-    callback?: AuthCallback;
-}
-
-interface AuthData {
-    user: UserState;
-    login: (props: LoginProps) => Promise<void>;
-    logout: (props: LogoutProps) => Promise<void>;
-    getSession: () => Promise<void>;
-    ifAuth: (callback: () => void) => void;
-}
-
-// default empty init values
-export const AuthContext = createContext<AuthData>({
-    user: null,
-    async login(props: LoginProps) {},
-    async logout(props: LogoutProps) {},
-    async getSession() {},
-    ifAuth(callback: () => void) {},
-});
-
-const useProvideAuth = () => {
-    const [user, setUser] = useState<UserState>(null);
-    const history = useHistory();
+    const rotateToken = async () => {
+        const client = await getBaseClient();
+        try {
+            const resp = await client.token_refresh();
+            if (resp.status === 200) {
+                setToken(resp.data.access);
+                return resp.data.access;
+            }
+        } catch (err) {}
+    };
 
     return {
-        user,
-        async login({ credentials, callback }: LoginProps) {
-            let { data, ok } = await api.login(credentials);
-            if (ok && data && data.user) setUser(data.user);
-            callback && callback({ data, ok });
+        isLoggedIn,
+        async login(credentials) {
+            const client = await getBaseClient();
+            const resp = await client.token_obtain_pair(null, credentials);
+            if (resp.status === 200) {
+                setToken(resp.data.access);
+            }
         },
-        async logout({ callback }: LogoutProps) {
-            let { data, ok } = await api.logout();
-            if (ok) setUser(null);
-            callback && callback({ data, ok });
+        async logout() {
+            setToken(null);
+            const client = await getBaseClient();
+            await client.token_unpair();
         },
-        async getSession() {
-            let { data, ok } = await api.getSession();
-            if (ok && data && data.user) setUser(data.user);
+        async getClient() {
+            return await getAuthClient({ token, rotateToken });
         },
-        ifAuth(callback: () => void) {
-            if (user) {
-                callback();
+        doIfAuth(fn: () => void) {
+            if (isLoggedIn) {
+                fn();
             } else {
-                debugLog({ IFAUTH: "redirect to login" });
-                history.push("/login/");
+                /// redirect to login
+                alert("write a thing to redirect to login screen");
             }
         },
     };
-};
+}
 
-export const ProvideAuth = ({ children }: { children: any }) => {
-    const auth = useProvideAuth();
+export const AuthContext = createContext<AuthData>({
+    isLoggedIn: false,
+    async login(credentials) {},
+    async logout() {},
+    async getClient() {
+        return await getBaseClient();
+    },
+    doIfAuth(fn: () => void) {},
+});
 
-    useEffect(() => {
-        auth.getSession();
-    }, []);
+export function ProvideAuth({ children }: { children: any }) {
+    const authData = useProvideAuth();
+    return <AuthContext.Provider value={authData}>{children}</AuthContext.Provider>;
+}
 
-    return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>;
-};
-
-export const useAuth = () => useContext(AuthContext);
-
+export function useAuth() {
+    return useContext(AuthContext);
+}

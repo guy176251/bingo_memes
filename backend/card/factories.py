@@ -1,9 +1,10 @@
+from random import randint, sample
+
 import factory
-from random import choice, sample, randint
 from factory.django import DjangoModelFactory
 
-from .models import Card  # , Tile
-from user.factories import SiteUserFactory
+from .models import Card
+
 
 HASHTAGS = [
     "viral",
@@ -11,21 +12,46 @@ HASHTAGS = [
     "music",
     "art",
     "meme",
+    "sports",
+    "chance",
+    "culture",
+    "effect",
+    "employee",
+    "fly",
+    "guy",
+    "indicate",
+    "inside",
+    "market",
+    "morning",
+    "push",
+    "scientist",
+    "seek",
+    "seem",
+    "simple",
+    "sort",
+    "sport",
+    "tax",
+    "think",
+    "yes",
 ]
 
 tile_field = factory.Faker("sentence")
+
+
+def card_title_sequence(n: int) -> str:
+    hashtags = [f" #{name}" for name in sample(HASHTAGS, randint(2, 4))]
+    title = f"Card {n}"
+    for hashtag in hashtags:
+        if len(title) + len(hashtag) <= Card.TITLE_LENGTH:
+            title += hashtag
+    return title
 
 
 class CardFactory(DjangoModelFactory):
     class Meta:
         model = Card
 
-    name = factory.Sequence(
-        lambda n: f"Test Card {n} "
-        + " ".join(f"#{name}" for name in sample(HASHTAGS, randint(2, 4)))
-    )
-    author = factory.SubFactory(SiteUserFactory)
-    category = factory.SubFactory("category.factories.CategoryFactory")
+    title = factory.Sequence(card_title_sequence)
 
     tile_1 = tile_field
     tile_2 = tile_field

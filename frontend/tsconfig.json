@@ -19,10 +19,14 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "downlevelIteration": true
+    "downlevelIteration": true,
+    "baseUrl": "src"
   },
   "include": [
     "src"
   ],
-  "exclude": ["**/node_modules", "**/.*/"]
+  "exclude": [
+    "**/node_modules",
+    "**/.*/"
+  ]
 }

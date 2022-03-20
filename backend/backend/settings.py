@@ -19,15 +19,16 @@ from functools import partial
 from itertools import product
 from pathlib import Path
 
+import django_stubs_ext
 import IPython
+
+django_stubs_ext.monkeypatch()
 
 # https://stackoverflow.com/questions/63049908/using-ipython-with-breakpoint
 # https://stackoverflow.com/questions/53933400/ipython-embed-does-not-use-terminal-colors
 #
 # ipython breakpoint
 sys.breakpointhook = partial(IPython.embed, display_banner=False, colors="neutral")
-
-# from decouple import config, Csv
 
 APP_NAME = "backend"
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -45,10 +46,8 @@ INSTALLED_APPS = [
     "ninja",
     "ninja_jwt",
     "ninja_extra",
-    # "api.apps.ApiConfig",
     "core.apps.CoreConfig",
     "user.apps.UserConfig",
-    "category.apps.CategoryConfig",
     "card.apps.CardConfig",
 ]
 
@@ -68,9 +67,7 @@ ROOT_URLCONF = "backend.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [
-            # REACT_BUILD_DIR
-        ],
+        "DIRS": [],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -130,51 +127,56 @@ STATICFILES_DIRS: list[Path] = [
 ]
 
 CSRF_COOKIE_SAMESITE = "Strict"
-SESSION_COOKIE_SAMESITE = "Strict"
-CSRF_COOKIE_HTTPONLY = False  # False since we will grab it via universal-cookies
-SESSION_COOKIE_HTTPONLY = True
+# SESSION_COOKIE_SAMESITE = "Strict"
+# CSRF_COOKIE_HTTPONLY = False  # False since we will grab it via universal-cookies
+# SESSION_COOKIE_HTTPONLY = True
 
 # PROD ONLY
 # CSRF_COOKIE_SECURE = True
 # SESSION_COOKIE_SECURE = True
 
-# Should be a switch for various settings
-DEBUG = bool(int(os.environ.get("DJANGO_DEBUG", 1)))
-SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
+AUTH_USER_MODEL = "user.AuthUser"
 
-# 'DJANGO_ALLOWED_HOSTS' should be a single string of hosts with a space between each.
-# ALLOWED_HOSTS = re.split(
-#     r"\s+", "http://localhost:8000 http://localhost:3000 http://127.0.0.1" if DEBUG else os.environ["ALLOWED_HOSTS"]
-# )
-# CSRF_TRUSTED_ORIGINS = [f"http://{h}" for h in ALLOWED_HOSTS]
-# CORS_ALLOWED_ORIGINS = [f"http://{h}" for h in ALLOWED_HOSTS]
+DEBUG = bool(int(value)) if (value := os.environ.get("DJANGO_DEBUG")) else True
 
-host_string = (
-    "localhost 127.0.0.1 [::1]" if DEBUG else os.environ["DJANGO_ALLOWED_HOSTS"]
-)
+# needed for mypy
+SECRET_KEY = "osidjfkcjdfvoijeorig" if DEBUG else os.environ["DJANGO_SECRET_KEY"]
+
+###################
+## HOSTS/ORIGINS ##
+###################
+
+if DEBUG:
+    host_string = "localhost 127.0.0.1 [::1]"
+    ports = ["", ":8000", ":3000"]
+    protocol = "http"
+else:
+    host_string = os.environ["DJANGO_ALLOWED_HOSTS"]
+    ports = [""]
+    protocol = "https"
+
 hosts = re.split(r"\s+", host_string)
-ports = ["", ":8000", ":3000"] if DEBUG else [""]
-protocol = "http://" if DEBUG else "https://"
-
-full_hosts: list[str] = [
-    f"{protocol}{host}{port}" for host, port in product(hosts, ports)
-]
+full_hosts = [f"{protocol}://{host}{port}" for host, port in product(hosts, ports)]
 
 ALLOWED_HOSTS = hosts
 CSRF_TRUSTED_ORIGINS = full_hosts
 CORS_ALLOWED_ORIGINS = full_hosts
 
-USE_SQLITE = bool(int(os.environ.get("DJANGO_USE_SQLITE", 1)))
+##############
+## DATABASE ##
+##############
+
+USE_POSTGRES = bool(int(value)) if (value := os.environ.get("DJANGO_DB_USE_POSTGRES")) else False
 
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": "debug_db.sqlite3",
     }
-    if USE_SQLITE
+    if not USE_POSTGRES
     else {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ["DJANGO_DB_NAME"],
+        "NAME": os.environ["DJANGO_DB"],
         "USER": os.environ["DJANGO_DB_USER"],
         "PASSWORD": os.environ["DJANGO_DB_PASSWORD"],
         "HOST": os.environ["DJANGO_DB_HOST"],
@@ -182,17 +184,22 @@ DATABASES = {
     }
 }
 
-AUTH_USER_MODEL = "user.AuthUser"
-ATOMIC_REQUESTS = False
+##############
+## NPLUSONE ##
+##############
 
-# nplusone
+if DEBUG:
+    NPLUSONE_LOGGER = logging.getLogger("nplusone")
+    NPLUSONE_LOG_LEVEL = logging.WARNING
+    NPLUSONE_RAISE = False
 
-NPLUSONE_LOGGER = logging.getLogger("nplusone")
-NPLUSONE_LOG_LEVEL = logging.WARNING
-NPLUSONE_RAISE = False
-
-
-# Logging
+    MIDDLEWARE.extend(
+        [
+            "core.middleware.metric_middleware",
+            "nplusone.ext.django.NPlusOneMiddleware",
+        ]
+    )
+    INSTALLED_APPS.append("nplusone.ext.django")
 
 LOGGING = {
     "version": 1,
@@ -212,17 +219,9 @@ LOGGING = {
 }
 
 NINJA_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(days=30),
+    "ACCESS_TOKEN_LIFETIME": timedelta(seconds=10),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=60),
+    "ROTATE_REFRESH_TOKENS": True,
 }
-
-if DEBUG:
-    MIDDLEWARE.extend(
-        [
-            "core.middleware.metric_middleware",
-            "nplusone.ext.django.NPlusOneMiddleware",
-        ]
-    )
-    INSTALLED_APPS.append("nplusone.ext.django")
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

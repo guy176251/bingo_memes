@@ -1,5 +1,9 @@
+#!/usr/bin/env bash
+
 domains="${NGINX_SERVER_NAME:-_}"
 config_file="
+
+limit_req_zone \$binary_remote_addr zone=api_limit:10m rate=3r/s;
 
 server {
     listen 80;
@@ -45,6 +49,10 @@ server {
     }
 
     location /api {
+        # https://www.nginx.com/blog/rate-limiting-nginx/#Two-Stage-Rate-Limiting
+        # limit_req zone=api_limit burst=12 delay=8;
+        limit_req zone=api_limit;
+
         try_files \$uri @proxy_api;
     }
     location /admin {
@@ -58,6 +66,7 @@ server {
         #proxy_set_header Host \$http_host;
         #proxy_redirect off;
         #proxy_pass   http://backend:8000;
+
         include uwsgi_params;
         uwsgi_pass unix:///tmp/uwsgi.sock;
     }

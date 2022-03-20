@@ -15,29 +15,26 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path
 from ninja_extra import NinjaExtraAPI
-from ninja_jwt.controller import NinjaJWTDefaultController
 
+from card.api import add_card_exceptions, card_router
+from core.api import token_router
 from core.auth import JWTOrReadOnlyAuth
-from user.api import add_user_exceptions, router as user_router
-from category.api import add_category_exceptions, router as category_router
-from card.api import add_card_exceptions, router as card_router
+from user.api import add_user_exceptions, user_router
 
-api = NinjaExtraAPI()
+api = NinjaExtraAPI(csrf=True)
 
-api.register_controllers(NinjaJWTDefaultController)
 
 jwt_read_only = JWTOrReadOnlyAuth()
 
-api.add_router("/user/", user_router, auth=jwt_read_only)
-api.add_router("/category/", category_router, auth=jwt_read_only)
-api.add_router("/card/", card_router, auth=jwt_read_only)
+api.add_router("/user/", user_router, auth=jwt_read_only, tags=["user"])
+api.add_router("/card/", card_router, auth=jwt_read_only, tags=["card"])
+api.add_router("/token/", token_router, tags=["token"])
 
 exception_handlers = [
     add_user_exceptions,
     add_card_exceptions,
-    add_category_exceptions,
 ]
 
 for add_handler in exception_handlers:

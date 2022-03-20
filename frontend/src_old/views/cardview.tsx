@@ -55,7 +55,9 @@ type SolutionArray = BingoTile[];
 
 const checkForBingo = (card: BingoCard): SolutionArray | undefined => {
     if (solutionArrays.some((line) => line.every((index) => card.tiles[index].clicked))) {
-        const solution = solutionArrays.filter((line) => line.every((index) => card.tiles[index].clicked))[0];
+        const solution = solutionArrays.filter((line) =>
+            line.every((index) => card.tiles[index].clicked)
+        )[0];
         return solution.map((index) => card.tiles[index]);
     }
 };
@@ -67,7 +69,12 @@ const checkForBingo = (card: BingoCard): SolutionArray | undefined => {
 type CardSetter = (card: BingoCard) => void;
 type SolutionSetter = (solution: SolutionArray) => void;
 
-const tileHover = (tile: BingoTile, state: boolean, card: BingoCard, setCard: CardSetter) => {
+const tileHover = (
+    tile: BingoTile,
+    state: boolean,
+    card: BingoCard,
+    setCard: CardSetter
+) => {
     if (!isMobile()) {
         const tiles = card.tiles;
         const index = tiles.indexOf(tile);
@@ -76,7 +83,12 @@ const tileHover = (tile: BingoTile, state: boolean, card: BingoCard, setCard: Ca
     }
 };
 
-const tileClick = (tile: BingoTile, card: BingoCard, setCard: CardSetter, setSolution: SolutionSetter) => {
+const tileClick = (
+    tile: BingoTile,
+    card: BingoCard,
+    setCard: CardSetter,
+    setSolution: SolutionSetter
+) => {
     const tiles = card.tiles;
     const index = tiles.indexOf(tile);
     tiles[index].clicked = !tiles[index].clicked;
@@ -86,7 +98,11 @@ const tileClick = (tile: BingoTile, card: BingoCard, setCard: CardSetter, setSol
     if (newSolution) setSolution(newSolution);
 };
 
-const resetBingo = (card: BingoCard | null, setCard: CardSetter, setSolution: SolutionSetter) => {
+const resetBingo = (
+    card: BingoCard | null,
+    setCard: CardSetter,
+    setSolution: SolutionSetter
+) => {
     if (card) {
         const tiles = card.tiles.map((tile) => {
             tile.hovered = false;
@@ -170,7 +186,11 @@ const CardLayout = ({ passedCard, cardInfo }: CardLayoutProps) => {
     debugLog({ CARD: "render", query: tileSearchQuery, solution, topVisible });
 
     const CollapseButton = () => (
-        <div className="hover-white" onClick={() => setOverviewVisible(!overviewVisible)} style={{ cursor: "pointer" }}>
+        <div
+            className="hover-white"
+            onClick={() => setOverviewVisible(!overviewVisible)}
+            style={{ cursor: "pointer" }}
+        >
             <FaIcon icon={overviewVisible ? faMinusCircle : faPlusCircle} />
         </div>
     );
@@ -190,7 +210,12 @@ const CardLayout = ({ passedCard, cardInfo }: CardLayoutProps) => {
                 <title>{card.name}</title>
             </Helmet>
             <Row id="card-container" className="g-3 justify-content-lg-center">
-                <Col id="hide-on-search" className={toggleClass} xs={12} lg={gridInfoColSize}>
+                <Col
+                    id="hide-on-search"
+                    className={toggleClass}
+                    xs={12}
+                    lg={gridInfoColSize}
+                >
                     <Row className="g-3">
                         <Col id="card-info" xs={12} className={toggleClass}>
                             {cardInfo}
@@ -200,9 +225,13 @@ const CardLayout = ({ passedCard, cardInfo }: CardLayoutProps) => {
                                 <div className="d-flex flex-wrap">
                                     <div
                                         className={`rounded-pill me-2 px-3 py-1 ${
-                                            overviewVisible ? "bg-sdark-orange text-white" : "sdark-bg"
+                                            overviewVisible
+                                                ? "bg-sdark-orange text-white"
+                                                : "sdark-bg"
                                         }`}
-                                        onClick={() => setOverviewVisible(!overviewVisible)}
+                                        onClick={() =>
+                                            setOverviewVisible(!overviewVisible)
+                                        }
                                         style={{ cursor: "pointer" }}
                                     >
                                         <FaIcon icon={faEye} className="me-3" />
@@ -215,7 +244,9 @@ const CardLayout = ({ passedCard, cardInfo }: CardLayoutProps) => {
                                         ] as Array<[ReactNode, IconDefinition, boolean]>
                                     ).map(([label, icon, gridValue]) => {
                                         const color =
-                                            gridValue === gridMode ? "bg-sdark-orange text-white" : "sdark-bg";
+                                            gridValue === gridMode
+                                                ? "bg-sdark-orange text-white"
+                                                : "sdark-bg";
                                         const onClick = () => {
                                             setGridMode(gridValue);
                                             setOverviewVisible(!gridValue);
@@ -259,7 +290,14 @@ const CardLayout = ({ passedCard, cardInfo }: CardLayoutProps) => {
                             <Row className="row-cols-5 g-2 text-center">
                                 {card.tiles.map((tile, index) => (
                                     <Col>
-                                        <div className={`py-2 rounded ${tileColor(tile, "sdark-fg")}`}>{index + 1}</div>
+                                        <div
+                                            className={`py-2 rounded ${tileColor(
+                                                tile,
+                                                "sdark-fg"
+                                            )}`}
+                                        >
+                                            {index + 1}
+                                        </div>
                                     </Col>
                                 ))}
                             </Row>
@@ -270,9 +308,17 @@ const CardLayout = ({ passedCard, cardInfo }: CardLayoutProps) => {
                     <Row className="g-3 justify-content-center">
                         <Col id="search-bar" xs={12} lg={gridSearchSize}>
                             <Row className="g-3">
-                                <Col xs={12} className={"d-lg-none " + (topVisible ? "d-none" : "")}>
+                                <Col
+                                    xs={12}
+                                    className={
+                                        "d-lg-none " + (topVisible ? "d-none" : "")
+                                    }
+                                >
                                     <div className="px-3 py-2 rounded sdark-fg">
-                                        <small>Card info hidden. Click on the expand button to show them.</small>
+                                        <small>
+                                            Card info hidden. Click on the expand button
+                                            to show them.
+                                        </small>
                                     </div>
                                 </Col>
                                 <Col xs={12}>
@@ -306,8 +352,12 @@ const CardLayout = ({ passedCard, cardInfo }: CardLayoutProps) => {
                                         {tileSearchQuery && (
                                             <Col xs={4} lg={3}>
                                                 <div className="px-2 rounded bg-sdark-cyan text-white text-center h-100 d-flex align-items-center justify-content-center">
-                                                    {`${filteredTiles.length || "No"} result` +
-                                                        (filteredTiles.length === 1 ? "" : "s")}
+                                                    {`${
+                                                        filteredTiles.length || "No"
+                                                    } result` +
+                                                        (filteredTiles.length === 1
+                                                            ? ""
+                                                            : "s")}
                                                 </div>
                                             </Col>
                                         )}
@@ -316,30 +366,50 @@ const CardLayout = ({ passedCard, cardInfo }: CardLayoutProps) => {
                             </Row>
                         </Col>
                         <Col id="tiles" xs={12} lg={gridTileSize}>
-                            <Row id="tile-rows" className={`g-2 row-cols-1 row-cols-lg-${gridRowCols}`}>
+                            <Row
+                                id="tile-rows"
+                                className={`g-2 row-cols-1 row-cols-lg-${gridRowCols}`}
+                            >
                                 {filteredTiles.map((tile, index) => (
                                     <Col>
                                         <div
                                             style={{ cursor: "pointer" }}
-                                            className={`rounded h-100 ${tileColor(tile)} ${gridTileClass}`}
-                                            onClick={() => tileClick(tile, card, setCard, setSolution)}
-                                            onMouseEnter={() => tileHover(tile, true, card, setCard)}
-                                            onMouseLeave={() => tileHover(tile, false, card, setCard)}
+                                            className={`rounded h-100 ${tileColor(
+                                                tile
+                                            )} ${gridTileClass}`}
+                                            onClick={() =>
+                                                tileClick(
+                                                    tile,
+                                                    card,
+                                                    setCard,
+                                                    setSolution
+                                                )
+                                            }
+                                            onMouseEnter={() =>
+                                                tileHover(tile, true, card, setCard)
+                                            }
+                                            onMouseLeave={() =>
+                                                tileHover(tile, false, card, setCard)
+                                            }
                                         >
                                             <Row>
                                                 <Col
                                                     xs={2}
                                                     lg={1}
-                                                    className={`${tile.clicked || tile.hovered ? "" : "border-end"} ${
-                                                        gridMode ? "d-none" : ""
-                                                    }`}
+                                                    className={`${
+                                                        tile.clicked || tile.hovered
+                                                            ? ""
+                                                            : "border-end"
+                                                    } ${gridMode ? "d-none" : ""}`}
                                                 >
                                                     <div className="h-100 d-flex align-items-center justify-content-center">
                                                         {index + 1}
                                                     </div>
                                                 </Col>
                                                 <Col>
-                                                    <div className="h-100">{tile.text}</div>
+                                                    <div className="h-100">
+                                                        {tile.text}
+                                                    </div>
                                                 </Col>
                                             </Row>
                                         </div>
@@ -354,7 +424,12 @@ const CardLayout = ({ passedCard, cardInfo }: CardLayoutProps) => {
                     show={solved}
                     dialogAs={(props) => (
                         <div className="modal-dialog modal-dialog-centered">
-                            <div {...{ ...props, className: "modal-content rounded sdark-bg" }}></div>
+                            <div
+                                {...{
+                                    ...props,
+                                    className: "modal-content rounded sdark-bg",
+                                }}
+                            ></div>
                         </div>
                     )}
                 >
@@ -368,7 +443,11 @@ const CardLayout = ({ passedCard, cardInfo }: CardLayoutProps) => {
                                 <Col className="p-1">
                                     <Col className="rounded h-100 p-2 sdark-fg">
                                         <Row>
-                                            <Col xs={2} md={1} className="border-sdark-right text-center">
+                                            <Col
+                                                xs={2}
+                                                md={1}
+                                                className="border-sdark-right text-center"
+                                            >
                                                 {index + 1}
                                             </Col>
                                             <Col>{tile.text}</Col>
@@ -385,7 +464,10 @@ const CardLayout = ({ passedCard, cardInfo }: CardLayoutProps) => {
                         </div>
                     </Modal.Body>
                     <Modal.Footer>
-                        <Button variant="primary" onClick={() => resetBingo(card, setCard, setSolution)}>
+                        <Button
+                            variant="primary"
+                            onClick={() => resetBingo(card, setCard, setSolution)}
+                        >
                             Start Over
                         </Button>
                     </Modal.Footer>
@@ -409,7 +491,10 @@ const CardView = () => {
             apiCall={() => api.getCard(cardId)}
             loadingMessage={`Loading bingo card ${cardId}`}
             component={({ data }) => (
-                <CardLayout passedCard={data} cardInfo={<CardInfo card={data} collapse={isMobile()} />} />
+                <CardLayout
+                    passedCard={data}
+                    cardInfo={<CardInfo card={data} collapse={isMobile()} />}
+                />
             )}
         />
     );
