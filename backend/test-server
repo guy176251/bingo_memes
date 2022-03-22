@@ -1,6 +1,0 @@
-#!/usr/bin/env bash
-
-# removes all migration files
-./reset-db
-poetry run ./manage.py init_db
-poetry run ./manage.py runserver

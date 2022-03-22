@@ -1,8 +1,0 @@
-#!/usr/bin/env bash
-
-export DJANGO_SECRET_KEY=poop
-rm $(fd -I -p "migrations/\d+.*\.py")
-rm debug_db.sqlite3
-poetry run ./manage.py makemigrations
-poetry run ./manage.py migrate
-poetry run ./manage.py init_db
