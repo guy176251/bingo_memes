@@ -42,11 +42,11 @@ set winminheight=0
 set winheight=1
 set winminwidth=0
 set winwidth=1
-exe '1resize ' . ((&lines * 38 + 39) / 79)
-exe 'vert 1resize ' . ((&columns * 142 + 142) / 284)
-exe '2resize ' . ((&lines * 38 + 39) / 79)
-exe 'vert 2resize ' . ((&columns * 141 + 142) / 284)
-exe '3resize ' . ((&lines * 37 + 39) / 79)
+exe '1resize ' . ((&lines * 33 + 39) / 79)
+exe 'vert 1resize ' . ((&columns * 141 + 71) / 142)
+exe '2resize ' . ((&lines * 33 + 39) / 79)
+exe 'vert 2resize ' . ((&columns * 0 + 71) / 142)
+exe '3resize ' . ((&lines * 42 + 39) / 79)
 argglobal
 balt docker-compose.yml
 setlocal fdm=expr
@@ -57,7 +57,7 @@ setlocal fdl=10
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-let s:l = 48 - ((28 * winheight(0) + 19) / 38)
+let s:l = 48 - ((24 * winheight(0) + 16) / 33)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
@@ -78,7 +78,7 @@ setlocal fdl=10
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-let s:l = 1 - ((0 * winheight(0) + 19) / 38)
+let s:l = 1 - ((0 * winheight(0) + 16) / 33)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
@@ -100,19 +100,18 @@ setlocal fdl=10
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-let s:l = 15 - ((14 * winheight(0) + 18) / 37)
+let s:l = 21 - ((20 * winheight(0) + 21) / 42)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 15
-normal! 011|
+keepjumps 21
+normal! 02|
 wincmd w
-3wincmd w
-exe '1resize ' . ((&lines * 38 + 39) / 79)
-exe 'vert 1resize ' . ((&columns * 142 + 142) / 284)
-exe '2resize ' . ((&lines * 38 + 39) / 79)
-exe 'vert 2resize ' . ((&columns * 141 + 142) / 284)
-exe '3resize ' . ((&lines * 37 + 39) / 79)
+exe '1resize ' . ((&lines * 33 + 39) / 79)
+exe 'vert 1resize ' . ((&columns * 141 + 71) / 142)
+exe '2resize ' . ((&lines * 33 + 39) / 79)
+exe 'vert 2resize ' . ((&columns * 0 + 71) / 142)
+exe '3resize ' . ((&lines * 42 + 39) / 79)
 tabnext
 edit ~/code/django/bingo_memes/Dockerfile
 argglobal
@@ -142,7 +141,6 @@ if filereadable(s:sx)
   exe "source " . fnameescape(s:sx)
 endif
 let &g:so = s:so_save | let &g:siso = s:siso_save
-set hlsearch
 nohlsearch
 let g:this_session = v:this_session
 let g:this_obsession = v:this_session
