@@ -148,18 +148,18 @@ DEBUG = int(os.environ["DEBUG"])
 
 # 'DJANGO_ALLOWED_HOSTS' should be a single string of hosts with a space between each.
 ALLOWED_HOSTS = re.split(r"\s+", os.environ["ALLOWED_HOSTS"])
-CSRF_TRUSTED_ORIGINS = ALLOWED_HOSTS
-CORS_ALLOWED_ORIGINS = [f"http://{h}" for h in ALLOWED_HOSTS]
+# CSRF_TRUSTED_ORIGINS = ALLOWED_HOSTS
+# CORS_ALLOWED_ORIGINS = [f"http://{h}" for h in ALLOWED_HOSTS]
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ["DB_NAME"],
-        "USER": os.environ["DB_USER"],
-        "PASSWORD": os.environ["DB_PASSWORD"],
-        "HOST": os.environ["DB_HOST"],
-        "PORT": os.environ["DB_PORT"],
-    }
+    # "default": {
+    #     "ENGINE": "django.db.backends.postgresql",
+    #     "NAME": os.environ["DB_NAME"],
+    #     "USER": os.environ["DB_USER"],
+    #     "PASSWORD": os.environ["DB_PASSWORD"],
+    #     "HOST": os.environ["DB_HOST"],
+    #     "PORT": os.environ["DB_PORT"],
+    # }
 }
 
 DEFAULT_RENDERER_CLASSES: list[str] = ["rest_framework.renderers.JSONRenderer"]
