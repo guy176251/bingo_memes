@@ -18,7 +18,7 @@ RUN npm run build
 
 ### Stage 2: Backend ###
 
-FROM tiangolo/uwsgi-nginx:python3.9-2021-10-02
+FROM tiangolo/uwsgi-nginx:python3.10-2021-10-26
 
 WORKDIR /app
 
@@ -28,15 +28,18 @@ ENV PYTHONUNBUFFERED 1
 # install dependencies
 RUN pip install poetry
 COPY ./backend/poetry.lock ./backend/pyproject.toml ./
-RUN poetry export -f requirements.txt --output requirements.txt
-RUN pip install --no-cache-dir --upgrade -r /app/requirements.txt
+RUN poetry export --without-hashes | pip install -r /dev/stdin
 
 # copy backend
 COPY ./backend ./
 
+#RUN apt-get update && \
+#    apt-get  --only-upgrade install -y libc6
+
+
 # tests
-RUN mypy .
-RUN flake8 .
+#RUN mypy .
+#RUN flake8 .
 
 # copy frontend static files 
 RUN rm -rf /usr/share/nginx/html/*

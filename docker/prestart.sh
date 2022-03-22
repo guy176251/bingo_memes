@@ -7,13 +7,8 @@ set -x
 #     sleep 2
 # done
 
-./manage.py makemigrations --check
 ./manage.py migrate
-
-DEBUG=${DEBUG:-0}
-if ! test $DEBUG -eq 0; then
-    ./manage.py init_db
-fi
+./manage.py init_db
 
 ./manage.py collectstatic --noinput
 cp -r /app/django_static /usr/share/nginx/html

@@ -20,9 +20,9 @@ from api.models import (
 )
 
 # 10 users, including myself
-num_of_usrs = 10
-num_of_cards = 10
-num_of_categories = 5
+num_of_usrs = 3
+num_of_cards = 3
+num_of_categories = 3
 total_cards = num_of_cards * num_of_usrs
 
 banner_url = (
@@ -238,6 +238,7 @@ def init_db_new():
             for cat in dummy_data.categories
         ]
     )
+    cat_objs = BingoCardCategory.objects.all()
 
     for cat, obj in zip(dummy_data.categories, cat_objs):
         cat.obj = obj
@@ -272,6 +273,7 @@ def init_db_new():
             for card in dummy_data.cards
         ]
     )
+    card_objs = BingoCard.objects.all()
 
     for card, obj in zip(dummy_data.cards, card_objs):
         card.obj = obj

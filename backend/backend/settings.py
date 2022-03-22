@@ -10,8 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
-import re
 import os
+import re
 from pathlib import Path
 
 # from typing import Tuple
@@ -144,14 +144,18 @@ SESSION_COOKIE_HTTPONLY = True
 # SESSION_COOKIE_SECURE = True
 
 SECRET_KEY = os.environ["SECRET_KEY"]
-DEBUG = int(os.environ["DEBUG"])
+DEBUG = True
 
 # 'DJANGO_ALLOWED_HOSTS' should be a single string of hosts with a space between each.
-ALLOWED_HOSTS = re.split(r"\s+", os.environ["ALLOWED_HOSTS"])
+ALLOWED_HOSTS = ["*"]
 # CSRF_TRUSTED_ORIGINS = ALLOWED_HOSTS
 # CORS_ALLOWED_ORIGINS = [f"http://{h}" for h in ALLOWED_HOSTS]
 
 DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": "db",
+    }
     # "default": {
     #     "ENGINE": "django.db.backends.postgresql",
     #     "NAME": os.environ["DB_NAME"],
