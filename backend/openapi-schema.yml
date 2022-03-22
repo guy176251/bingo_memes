@@ -1,0 +1,777 @@
+openapi: 3.0.2
+info:
+  title: ''
+  version: ''
+paths:
+  /api/logout/:
+    get:
+      operationId: listlogout_views
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {}
+          description: ''
+      tags:
+      - api
+  /api/session/:
+    get:
+      operationId: listsession_views
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {}
+          description: ''
+      tags:
+      - api
+  /api/cards/:
+    get:
+      operationId: listBingoCards
+      description: Gets a list of cards, or creates a single new card.
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    example: 123
+                  next:
+                    type: string
+                    nullable: true
+                    format: uri
+                    example: http://api.example.org/accounts/?page=4
+                  previous:
+                    type: string
+                    nullable: true
+                    format: uri
+                    example: http://api.example.org/accounts/?page=2
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CardList'
+          description: ''
+      tags:
+      - api
+    post:
+      operationId: createBingoCard
+      description: Gets a list of cards, or creates a single new card.
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CardList'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CardList'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CardList'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardList'
+          description: ''
+      tags:
+      - api
+  /api/cards/{id}/:
+    get:
+      operationId: retrieveBingoCard
+      description: Get, delete or update a single bingo card.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this bingo card.
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardDetail'
+          description: ''
+      tags:
+      - api
+    put:
+      operationId: updateBingoCard
+      description: Get, delete or update a single bingo card.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this bingo card.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CardDetail'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CardDetail'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CardDetail'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardDetail'
+          description: ''
+      tags:
+      - api
+    patch:
+      operationId: partialUpdateBingoCard
+      description: Get, delete or update a single bingo card.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this bingo card.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CardDetail'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CardDetail'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CardDetail'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardDetail'
+          description: ''
+      tags:
+      - api
+    delete:
+      operationId: destroyBingoCard
+      description: Get, delete or update a single bingo card.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this bingo card.
+        schema:
+          type: string
+      responses:
+        '204':
+          description: ''
+      tags:
+      - api
+  /api/categories/:
+    get:
+      operationId: listBingoCardCategorys
+      description: Shows bingo card categories.
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    example: 123
+                  next:
+                    type: string
+                    nullable: true
+                    format: uri
+                    example: http://api.example.org/accounts/?page=4
+                  previous:
+                    type: string
+                    nullable: true
+                    format: uri
+                    example: http://api.example.org/accounts/?page=2
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Category'
+          description: ''
+      tags:
+      - api
+  /api/categories/{name}/:
+    get:
+      operationId: retrieveBingoCardCategory
+      description: Get a single bingo card category.
+      parameters:
+      - name: name
+        in: path
+        required: true
+        description: ''
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+          description: ''
+      tags:
+      - api
+  /api/users/{id}/:
+    get:
+      operationId: retrieveSiteUser
+      description: Gets a single site user.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this site user.
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetail'
+          description: ''
+      tags:
+      - api
+  /api/popular/categories/:
+    get:
+      operationId: listBingoCardCategorysPopular
+      description: Shows bingo card categories.
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    example: 123
+                  next:
+                    type: string
+                    nullable: true
+                    format: uri
+                    example: http://api.example.org/accounts/?page=4
+                  previous:
+                    type: string
+                    nullable: true
+                    format: uri
+                    example: http://api.example.org/accounts/?page=2
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CategoryRelated'
+          description: ''
+      tags:
+      - api
+  /api/bar/categories/:
+    get:
+      operationId: listBingoCardCategorysBar
+      description: View for category search bar. Returns top 3 categories sorted by
+        number of bingo cards.
+      parameters:
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CategorySearchBar'
+          description: ''
+      tags:
+      - api
+  /api/bar/cards/:
+    get:
+      operationId: listBingoCardsBar
+      description: View for category search bar. Returns top 3 categories sorted by
+        number of bingo cards.
+      parameters:
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CardSearchBar'
+          description: ''
+      tags:
+      - api
+  /api/login/:
+    post:
+      operationId: createlogin_view
+      description: ''
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema: {}
+          application/x-www-form-urlencoded:
+            schema: {}
+          multipart/form-data:
+            schema: {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema: {}
+          description: ''
+      tags:
+      - api
+  /api/votes/:
+    post:
+      operationId: createupvote_view
+      description: ''
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema: {}
+          application/x-www-form-urlencoded:
+            schema: {}
+          multipart/form-data:
+            schema: {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema: {}
+          description: ''
+      tags:
+      - api
+  /api/signup/:
+    post:
+      operationId: createcreate_user_view
+      description: ''
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema: {}
+          application/x-www-form-urlencoded:
+            schema: {}
+          multipart/form-data:
+            schema: {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema: {}
+          description: ''
+      tags:
+      - api
+  /api/subscribe/:
+    post:
+      operationId: createsub_category_view
+      description: ''
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema: {}
+          application/x-www-form-urlencoded:
+            schema: {}
+          multipart/form-data:
+            schema: {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema: {}
+          description: ''
+      tags:
+      - api
+  /api/follow/:
+    post:
+      operationId: createfollow_user_view
+      description: ''
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema: {}
+          application/x-www-form-urlencoded:
+            schema: {}
+          multipart/form-data:
+            schema: {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema: {}
+          description: ''
+      tags:
+      - api
+components:
+  schemas:
+    CardList:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        score:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 50
+        author:
+          type: object
+          properties:
+            name:
+              type: string
+              maxLength: 20
+            id:
+              type: integer
+              readOnly: true
+          required:
+          - name
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        hashtags:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                maxLength: 20
+            required:
+            - name
+          readOnly: true
+        upvoted:
+          type: string
+          readOnly: true
+        category:
+          type: object
+          properties:
+            name:
+              type: string
+              maxLength: 20
+          required:
+          - name
+        tiles:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                readOnly: true
+              text:
+                type: string
+                maxLength: 200
+            required:
+            - text
+          writeOnly: true
+      required:
+      - name
+      - category
+      - tiles
+    CardDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        score:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 50
+        author:
+          type: object
+          properties:
+            name:
+              type: string
+              maxLength: 20
+            id:
+              type: integer
+              readOnly: true
+          required:
+          - name
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        hashtags:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                maxLength: 20
+            required:
+            - name
+          readOnly: true
+        upvoted:
+          type: string
+          readOnly: true
+        category:
+          type: object
+          properties:
+            name:
+              type: string
+              maxLength: 20
+          required:
+          - name
+        tiles:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                readOnly: true
+              text:
+                type: string
+                maxLength: 200
+            required:
+            - text
+      required:
+      - name
+      - category
+      - tiles
+    Category:
+      type: object
+      properties:
+        name:
+          type: string
+        author:
+          type: object
+          properties:
+            name:
+              type: string
+              maxLength: 20
+            id:
+              type: integer
+              readOnly: true
+            score:
+              type: integer
+            created_at:
+              type: string
+              format: date-time
+              readOnly: true
+            is_following:
+              type: string
+              readOnly: true
+            categories_created:
+              type: array
+              items:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    maxLength: 20
+                  id:
+                    type: integer
+                    readOnly: true
+                  icon_url:
+                    type: string
+                    maxLength: 2000
+                  is_subscribed:
+                    type: string
+                    readOnly: true
+                  subscriber_count:
+                    type: string
+                    readOnly: true
+                required:
+                - name
+          required:
+          - name
+          - categories_created
+          readOnly: true
+        id:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        is_subscribed:
+          type: string
+          readOnly: true
+        description:
+          type: string
+          maxLength: 200
+        subscriber_count:
+          type: string
+          readOnly: true
+        hashtags:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                maxLength: 20
+            required:
+            - name
+        banner_url:
+          type: string
+          maxLength: 2000
+        icon_url:
+          type: string
+          maxLength: 2000
+        related_categories:
+          type: string
+          readOnly: true
+      required:
+      - name
+      - hashtags
+    UserDetail:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 20
+        id:
+          type: integer
+          readOnly: true
+        score:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        is_following:
+          type: string
+          readOnly: true
+        categories_created:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                maxLength: 20
+              id:
+                type: integer
+                readOnly: true
+              icon_url:
+                type: string
+                maxLength: 2000
+              is_subscribed:
+                type: string
+                readOnly: true
+              subscriber_count:
+                type: string
+                readOnly: true
+            required:
+            - name
+      required:
+      - name
+      - categories_created
+    CategoryRelated:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 20
+        id:
+          type: integer
+          readOnly: true
+        icon_url:
+          type: string
+          maxLength: 2000
+        is_subscribed:
+          type: string
+          readOnly: true
+        subscriber_count:
+          type: string
+          readOnly: true
+      required:
+      - name
+    CategorySearchBar:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 20
+      required:
+      - name
+    CardSearchBar:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 50
+        id:
+          type: integer
+          readOnly: true
+      required:
+      - name

@@ -9,12 +9,14 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
 endif
 set shortmess=aoO
 badd +22 README.md
-badd +157 backend/backend/settings.py
+badd +156 backend/backend/settings.py
 badd +1 .env.old
 badd +12 docker-compose.yml
-badd +37 Dockerfile
-badd +12 docker/prestart.sh
-badd +0 backend/api/management/commands/init_db.py
+badd +45 Dockerfile
+badd +8 docker/prestart.sh
+badd +1 backend/api/management/commands/init_db.py
+badd +285 backend/openapi-schema.yml
+badd +0 .gitignore
 argglobal
 %argdel
 tabnew +setlocal\ bufhidden=wipe
@@ -40,11 +42,11 @@ set winminheight=0
 set winheight=1
 set winminwidth=0
 set winwidth=1
-exe '1resize ' . ((&lines * 37 + 39) / 79)
+exe '1resize ' . ((&lines * 35 + 39) / 79)
 exe 'vert 1resize ' . ((&columns * 71 + 71) / 142)
-exe '2resize ' . ((&lines * 37 + 39) / 79)
+exe '2resize ' . ((&lines * 35 + 39) / 79)
 exe 'vert 2resize ' . ((&columns * 70 + 71) / 142)
-exe '3resize ' . ((&lines * 38 + 39) / 79)
+exe '3resize ' . ((&lines * 40 + 39) / 79)
 argglobal
 balt docker-compose.yml
 setlocal fdm=expr
@@ -55,11 +57,11 @@ setlocal fdl=10
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-let s:l = 37 - ((20 * winheight(0) + 18) / 37)
+let s:l = 40 - ((22 * winheight(0) + 17) / 35)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 37
+keepjumps 40
 normal! 0
 wincmd w
 argglobal
@@ -76,7 +78,7 @@ setlocal fdl=10
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-let s:l = 1 - ((0 * winheight(0) + 18) / 37)
+let s:l = 1 - ((0 * winheight(0) + 17) / 35)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
@@ -85,10 +87,11 @@ normal! 0
 lcd ~/code/django/bingo_memes
 wincmd w
 argglobal
-if bufexists(fnamemodify("~/code/django/bingo_memes/backend/backend/settings.py", ":p")) | buffer ~/code/django/bingo_memes/backend/backend/settings.py | else | edit ~/code/django/bingo_memes/backend/backend/settings.py | endif
+if bufexists(fnamemodify("~/code/django/bingo_memes/.gitignore", ":p")) | buffer ~/code/django/bingo_memes/.gitignore | else | edit ~/code/django/bingo_memes/.gitignore | endif
 if &buftype ==# 'terminal'
-  silent file ~/code/django/bingo_memes/backend/backend/settings.py
+  silent file ~/code/django/bingo_memes/.gitignore
 endif
+balt ~/code/django/bingo_memes/backend/backend/settings.py
 setlocal fdm=expr
 setlocal fde=nvim_treesitter#foldexpr()
 setlocal fmr={{{,}}}
@@ -97,22 +100,21 @@ setlocal fdl=10
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-155
-normal! zo
-let s:l = 157 - ((18 * winheight(0) + 19) / 38)
+let s:l = 1 - ((0 * winheight(0) + 20) / 40)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 157
-normal! 020|
+keepjumps 1
+normal! 0
 wincmd w
-exe '1resize ' . ((&lines * 37 + 39) / 79)
+3wincmd w
+exe '1resize ' . ((&lines * 35 + 39) / 79)
 exe 'vert 1resize ' . ((&columns * 71 + 71) / 142)
-exe '2resize ' . ((&lines * 37 + 39) / 79)
+exe '2resize ' . ((&lines * 35 + 39) / 79)
 exe 'vert 2resize ' . ((&columns * 70 + 71) / 142)
-exe '3resize ' . ((&lines * 38 + 39) / 79)
+exe '3resize ' . ((&lines * 40 + 39) / 79)
 tabnext
-edit ~/code/django/bingo_memes/backend/api/management/commands/init_db.py
+edit ~/code/django/bingo_memes/Dockerfile
 argglobal
 balt ~/code/django/bingo_memes/docker/prestart.sh
 setlocal fdm=expr
@@ -123,14 +125,13 @@ setlocal fdl=10
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-let s:l = 1 - ((0 * winheight(0) + 38) / 76)
+let s:l = 47 - ((22 * winheight(0) + 18) / 36)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 1
+keepjumps 47
 normal! 0
-lcd ~/code/django/bingo_memes
-tabnext 2
+tabnext 1
 if exists('s:wipebuf') && len(win_findbuf(s:wipebuf)) == 0 && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
   silent exe 'bwipe ' . s:wipebuf
 endif

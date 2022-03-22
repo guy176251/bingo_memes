@@ -43,7 +43,10 @@ COPY ./backend ./
 
 # copy frontend static files 
 RUN rm -rf /usr/share/nginx/html/*
+
 COPY --from=builder /app/build /usr/share/nginx/html
+RUN ./manage.py collectstatic --noinput
+RUN cp -r /app/django_static /usr/share/nginx/html
 
 # Copy docker image related files
 COPY ./docker/prestart.sh ./

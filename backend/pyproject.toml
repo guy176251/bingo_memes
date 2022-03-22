@@ -11,6 +11,8 @@ djangorestframework = "^3.13.1"
 psycopg2-binary = "^2.9.3"
 django-cors-headers = "^3.11.0"
 ipython = "^8.1.1"
+PyYAML = "^6.0"
+uritemplate = "^4.1.1"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^4.0.1"

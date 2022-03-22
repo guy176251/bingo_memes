@@ -15,3 +15,7 @@ __pycache__/
 # sort_algo
 /sort_algo/target
 /sort_algo/debug
+
+*.sqlite*
+.old/
+Session.vim
