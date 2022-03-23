@@ -27,6 +27,7 @@ import SearchBar from "./components/searchbar";
 import "./scss/main.scss";
 import "./scss/sidebar.scss";
 import { BingoCard } from "./types";
+import AboutView from "./views/about";
 import CardCreateView from "./views/cardcreateview";
 import CardView from "./views/cardview";
 import CategoryView from "./views/categoryview";
@@ -225,11 +226,13 @@ const App = () => {
         "/signup/": SignupView,
         "/login/": LoginView,
         "/cards/:cardId/": CardView,
+        '/about': AboutView,
     };
 
     return (
         <div className="sdark-bg">
             <TopNavBar />
+
             <Switch>
                 {/* CARD LIST ROUTES; DOESN'T NEED CONTAINER */}
                 <Route exact path="/categories/:categoryName/">
