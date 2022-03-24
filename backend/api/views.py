@@ -1,48 +1,25 @@
 from django.contrib.auth import authenticate, login, logout
-from django.shortcuts import get_object_or_404
-from django.shortcuts import render
-from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect
-
 # from django.db.transaction import atomic
 from django.db.models import QuerySet
+from django.shortcuts import get_object_or_404, render
+from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie
 from rest_framework import generics  # , filters #, mixins
-from rest_framework import permissions
-from rest_framework import status
+from rest_framework import permissions, status
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.response import Response
 from rest_framework.request import Request
+from rest_framework.response import Response
 
+from .filters import (CardAuthorFilter, CardCategoryFilter, CardHashtagFilter,
+                      DateFilter, OrderingFilter, Pagination, SearchFilter,
+                      TopThreeCardFilter, TopThreeCategoryFilter,
+                      top_n_categories)
 from .models import BingoCard, BingoCardCategory, SiteUser
-from .serializers import (
-    # FollowUserSerializer,
-    # SubToCategorySerializer,
-    CardDetailSerializer,
-    CardListSerializer,
-    CardSearchBarSerializer,
-    CategoryRelatedSerializer,
-    CategorySearchBarSerializer,
-    CategorySerializer,
-    CategorySubscribeSerializer,
-    LoginSerializer,
-    UserCreateSerializer,
-    UserDetailSerializer,
-    UserFollowSerializer,
-    UserSessionSerializer,
-    VoteSerializer,
-)
-
-from .filters import (
-    Pagination,
-    SearchFilter,
-    OrderingFilter,
-    CardCategoryFilter,
-    CardAuthorFilter,
-    DateFilter,
-    TopThreeCategoryFilter,
-    TopThreeCardFilter,
-    CardHashtagFilter,
-    top_n_categories,
-)
+from .serializers import (  # FollowUserSerializer,; SubToCategorySerializer,
+    CardDetailSerializer, CardListSerializer, CardSearchBarSerializer,
+    CategoryRelatedSerializer, CategorySearchBarSerializer, CategorySerializer,
+    CategorySubscribeSerializer, LoginSerializer, UserCreateSerializer,
+    UserDetailSerializer, UserFollowSerializer, UserSessionSerializer,
+    VoteSerializer)
 
 HOME_SORT = "-hot"
 
@@ -71,7 +48,10 @@ class CardList(generics.ListCreateAPIView):
     Gets a list of cards, or creates a single new card.
     """
 
-    queryset = BingoCard.objects.all()
+    queryset = BingoCard.objects.select_related("author", "category").prefetch_related(
+        "hashtags"
+    )
+
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     serializer_class = CardListSerializer
     pagination_class = Pagination
@@ -120,7 +100,9 @@ class CardDetail(generics.RetrieveUpdateDestroyAPIView):
     Get, delete or update a single bingo card.
     """
 
-    queryset = BingoCard.objects.all()
+    queryset = BingoCard.objects.select_related("author", "category").prefetch_related(
+        "tiles", "hashtags"
+    )
     serializer_class = CardDetailSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly]
 
@@ -203,7 +185,9 @@ class CategoryDetail(generics.RetrieveAPIView):
     Get a single bingo card category.
     """
 
-    queryset = BingoCardCategory.objects.all()
+    queryset = BingoCardCategory.objects.select_related("author").prefetch_related(
+        "hashtags"
+    )
     serializer_class = CategorySerializer
     lookup_field = "name"
     db_lookup_field = "name__iexact"

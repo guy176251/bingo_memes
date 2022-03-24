@@ -65,7 +65,7 @@ const apiResp = async <T = any>(url: string, options: any): Promise<ApiResponse<
 };
 
 interface VoteData {
-    card: { id: number };
+    card_id: number;
     up: boolean;
 }
 

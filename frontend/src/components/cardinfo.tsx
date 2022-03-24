@@ -42,7 +42,7 @@ const VoteButtons = ({ card, itemMargin = "" }: VoteButtonsProps) => {
 
     const voteAction = (up: boolean) => {
         setUpvoted(upvoted === null || up !== upvoted ? up : null);
-        api.createVote({ card: { id: card.id }, up: up });
+        api.createVote({ card_id: card.id , up: up });
     };
 
     /*

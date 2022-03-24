@@ -1,22 +1,14 @@
 import difflib
-from . import validators
-from .models import (
-    BingoCard,
-    BingoTile,
-    Vote,
-    SiteUser,
-    BingoCardCategory,
-    # CategorySubscription,
-    # UserSubscription,
-    # Subscription,
-    # Follow,
-    Hashtag,
-)
+
 from django.contrib.auth.models import User
 from django.core.validators import EmailValidator
 from django.db import IntegrityError
 from django.db.transaction import atomic
 from rest_framework import serializers
+
+from . import validators
+from .models import (  # CategorySubscription,; UserSubscription,; Subscription,; Follow,
+    BingoCard, BingoCardCategory, BingoTile, Hashtag, SiteUser, Vote)
 
 # from libreddit_sort import hot_score, best_score
 
@@ -229,53 +221,51 @@ class UserSmallSerializer(serializers.ModelSerializer):
         fields = ["name", "id"]
 
 
-class CardDetailSerializer(serializers.ModelSerializer):
-    category = CategorySmallSerializer()
-    upvoted = serializers.SerializerMethodField()
-    author = UserSmallSerializer(**is_immutable)
-    tiles = TileSerializer(many=True)
+class CardFields(serializers.ModelSerializer):
+    FIELD_NAMES = [
+        "id",
+        "score",
+        "name",
+        "author",
+        "created_at",
+        "hashtags",
+        "category",
+        "upvoted",
+    ]
+
+    id = serializers.IntegerField(required=False)
+    score = serializers.IntegerField(read_only=True)
+    category = CategorySmallSerializer(read_only=True)
+    author = UserSmallSerializer(read_only=True)
     hashtags = HashtagSerializer(many=True, read_only=True)
+    upvoted = serializers.SerializerMethodField()
+
+    def get_upvoted(self, card):
+        user: User = self.context["request"].user
+
+        if not user.is_authenticated:
+            return
+
+        vote = Vote.objects.filter(card=card, user=user.site_user).first()
+        if vote:
+            return vote.up
+
+
+class CardDetailSerializer(CardFields):
+    tiles = TileSerializer(many=True)
 
     class Meta:
         model = BingoCard
         fields = [
-            "id",
-            "score",
-            "name",
-            "author",
-            "created_at",
-            "hashtags",
-            "upvoted",
-            "category",
+            *CardFields.FIELD_NAMES,
             "tiles",
         ]
 
-        extra_kwargs = {
-            f: is_immutable
-            for f in ["score", "created_at"]
-            # 'name': {'validators': [validators.length_is_(50)]},
-        }
-
-    def get_upvoted(self, card):
-        user = self.context["request"].user
-        try:
-            site_user = user.site_user
-        except AttributeError:
-            pass
-        else:
-            vote = Vote.objects.filter(card=card, user=site_user).first()
-            if vote:
-                return vote.up
-
     def update(self, card, card_data):
         """Only changes tile data."""
-        # card.name = card_data['name']
         tile_data = card_data.pop("tiles")
 
-        # from pprint import pprint
-        # pprint(tile_data)
         with atomic():
-            # card.save()
             BingoTile.objects.bulk_update(
                 [BingoTile(id=tile["id"], text=tile["text"]) for tile in tile_data],
                 ["text"],
@@ -284,8 +274,17 @@ class CardDetailSerializer(serializers.ModelSerializer):
         return card
 
 
-class CardListSerializer(CardDetailSerializer):
+class CardListSerializer(CardFields):
     tiles = TileSerializer(many=True, write_only=True)
+    category_id = serializers.IntegerField(write_only=True)
+
+    class Meta:
+        model = BingoCard
+        fields = [
+            *CardFields.FIELD_NAMES,
+            "tiles",
+            "category_id",
+        ]
 
     def validate(self, card_data):
         if len(card_data["tiles"]) != 25:
@@ -323,6 +322,9 @@ class CardListSerializer(CardDetailSerializer):
         return card
 
 
+print(f"{CardListSerializer.Meta.fields = }")
+
+
 class CardVoteSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(validators=[validators.card_exists], read_only=True)
 
@@ -332,16 +334,16 @@ class CardVoteSerializer(serializers.ModelSerializer):
 
 
 class VoteSerializer(serializers.ModelSerializer):
-    card = CardVoteSerializer()
+    card_id = serializers.IntegerField()
 
     class Meta:
         model = Vote
-        fields = ["up", "card"]
+        fields = ["up", "card_id"]
 
     def create(self, vote_data: dict):
         VoteModel = self.Meta.model
 
-        card_id = vote_data["card"]["id"]
+        card_id = vote_data["card_id"]
         card = BingoCard.objects.get(id=card_id)
         vote_data["card"] = card
 
