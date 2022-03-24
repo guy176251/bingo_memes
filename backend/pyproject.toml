@@ -13,6 +13,8 @@ django-cors-headers = "^3.11.0"
 ipython = "^8.1.1"
 PyYAML = "^6.0"
 uritemplate = "^4.1.1"
+pytest = "^7.1.1"
+pytest-django = "^4.5.2"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^4.0.1"
